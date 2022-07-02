@@ -3,6 +3,7 @@ from copy import deepcopy
 import datetime
 import imp
 from re import I
+from tkinter import Frame
 import cv2
 import glob
 import io
@@ -48,10 +49,10 @@ def load_image(image_File):
 
 rows = run_query("SELECT * from student_ca")
 
-clean_db=pd.DataFrame(rows,columns=["Roll no","Name","Prac"])
+# clean_db=pd.DataFrame(rows,columns=["Roll no","Name","Prac"])
 
 
-st.dataframe(clean_db)
+# st.dataframe(clean_db)
 
 with st.form(key="query_form",clear_on_submit=True):
     input_rno=st.number_input("Enter Roll No",min_value=1, max_value=50, step=1)
@@ -131,6 +132,8 @@ def faces():
         # save(gray,new_path+str(counter),(x1-fit,y1-fit,x2+fit,y2+fit))
         save(gray,new_path+str(counter),(x1,y1,x2,y2))
     frame = cv2.resize(frame,(800,800))
+    cv2.imshow("im1",frame)
+    cv2.waitKey(0)
     print("done saving")
 
 
@@ -145,6 +148,7 @@ with st.form(key="Get_Attendence",clear_on_submit=True):
 if attendence_file is not None:
     faces()
     st.success("done saving")
+    run_query(f"alter table student_ca ADD COLUMN ntre varchar(255);")
     photo_data=run_query("select photo_link from student_ca")
     for data in photo_data:
         image_link=data[0]
@@ -152,9 +156,13 @@ if attendence_file is not None:
             ImageOfAttendece=cv2.imread(img)
             ImageOfDatabase=cv2.imread(image_link)
             resultmain=DeepFace.verify(ImageOfAttendece,ImageOfDatabase,model_name="Facenet", enforce_detection=False,detector_backend="mtcnn")
-            print(resultmain)
-            print(image_link)
-            print(img)
+            if resultmain["verified"] is True:
+                run_query(f"update student_ca set ntre=\"present\" where photo_link=\"{image_link}\" ")
+                print(resultmain)
+                print(image_link)
+                print(img)
 
+    print("done")
+            
 
 
