@@ -7,7 +7,7 @@ from tkinter import Frame
 import cv2
 import glob
 import io
-
+import pyodbc
 from deepface import DeepFace
 from turtle import clear
 from matplotlib import image
@@ -51,8 +51,6 @@ rows = run_query("SELECT * from student_ca")
 
 # clean_db=pd.DataFrame(rows,columns=["Roll no","Name","Prac"])
 
-
-# st.dataframe(clean_db)
 
 with st.form(key="query_form",clear_on_submit=True):
     input_rno=st.number_input("Enter Roll No",min_value=1, max_value=50, step=1)
@@ -110,6 +108,7 @@ def save(img,name, bbox, width=180,height=227):
 
 def faces():
     global newdir_lock
+    global new_path
     newdir=datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     newdir_lock=newdir
     os.mkdir("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/" + newdir)
@@ -148,7 +147,9 @@ with st.form(key="Get_Attendence",clear_on_submit=True):
 if attendence_file is not None:
     faces()
     st.success("done saving")
-    run_query(f"alter table student_ca ADD COLUMN ntre varchar(255);")
+    time = datetime.datetime.now().strftime('%Y-%m-%d')
+    locktime=time
+    run_query(f"alter table student_ca ADD COLUMN `{locktime}` varchar(255);")
     photo_data=run_query("select photo_link from student_ca")
     for data in photo_data:
         image_link=data[0]
@@ -157,12 +158,27 @@ if attendence_file is not None:
             ImageOfDatabase=cv2.imread(image_link)
             resultmain=DeepFace.verify(ImageOfAttendece,ImageOfDatabase,model_name="Facenet", enforce_detection=False,detector_backend="mtcnn")
             if resultmain["verified"] is True:
-                run_query(f"update student_ca set ntre=\"present\" where photo_link=\"{image_link}\" ")
-                print(resultmain)
-                print(image_link)
-                print(img)
-
+                run_query(f"update student_ca set `{locktime}` = \"present\" where photo_link=\"{image_link}\" ")
+                break 
+    print("completed loop")
+    run_query(f"UPDATE student_ca  SET `{locktime}`=COALESCE(`{locktime}`,\"absent\");")
+    sql_query = pd.read_sql_query('''
+                              select * from student_ca
+                              '''
+                              ,mydb)
+    df=pd.DataFrame(sql_query)
+    df.to_csv(fr"{new_path}+{locktime}+.csv",index=False)
     print("done")
+    run_query(f"alter table student_ca drop column `{locktime}`")
+
+    
+
+    
             
+
+
+
+
+
 
 
