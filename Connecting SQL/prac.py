@@ -49,7 +49,7 @@ def load_image(image_File):
     img=Image.open(image_File)
     return img
 
-rows = run_query("SELECT * from student_ca")
+
 
 # clean_db=pd.DataFrame(rows,columns=["Roll no","Name","Prac"])
 
@@ -85,7 +85,20 @@ try:
             else:
                 st.error("Face is required in image")
 except:
-    st.error("No Information Added")
+    st.error("Fill all the Columns")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

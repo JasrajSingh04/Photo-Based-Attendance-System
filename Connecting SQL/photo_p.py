@@ -32,12 +32,10 @@ mydb = mysql.connector.connect(
 
 cursor=mydb.cursor()
 
-query = 'select * from student_ca'
+
   
 # Execute the query to get the file
-cursor.execute(query)
-  
-data = cursor.fetchall()
+
 
 
 
@@ -51,10 +49,26 @@ data = cursor.fetchall()
 #           print(image_link)
 #           print(img)
 
-sql_query = pd.read_sql_query('''
-                              select * from student_ca
-                              '''
-                              ,mydb)
-df = pd.DataFrame(sql_query)
-df.to_csv (r'F:\VS code python\Python face-recognition try\df.csv', index = False) # place 'r' before the path name
-print("done saving")
+# sql_query = pd.read_sql_query('''
+#                               select * from student_ca
+#                               '''
+#                               ,mydb)
+# df = pd.DataFrame(sql_query)
+# df.to_csv (r'F:\VS code python\Python face-recognition try\df.csv', index = False) # place 'r' before the path name
+# print("done saving")
+
+query = 'select * from lnames'
+
+cursor.execute(query)
+  
+data = cursor.fetchall()
+
+lecture_name=data
+
+
+lname=[]
+for lecture in lecture_name:
+    lnamefor=lecture[0]
+    print(lnamefor)
+    lname.append(lnamefor)
+print(lname) 

@@ -3,6 +3,7 @@ from ast import Return
 from copy import deepcopy
 import datetime
 import imp
+
 from re import I
 from tkinter import Frame
 import cv2
@@ -24,6 +25,7 @@ from PIL import Image , ImageOps , ImageDraw , ImageFont
 from typer import Exit
 import face_recognition
 from prac import *
+from pages.page_2 import *
 
 
 
@@ -78,13 +80,20 @@ def faces():
         # save(gray,new_path+str(counter),(x1-fit,y1-fit,x2+fit,y2+fit))
         save(gray,new_path+str(counter),(x1,y1,x2,y2))
     frame = cv2.resize(frame,(800,800))
-    cv2.imshow("im1",frame)
+    cv2.imshow("im1",frame) 
     cv2.waitKey(0)
     print("done saving")
 
 
+lecture_name=run_query("Select * from lnames")
+lname=[]
+for lecture in lecture_name:
+    lnamefor=lecture[0]
+    lname.append(lnamefor)
 
 with st.form(key="Get_Attendence",clear_on_submit=True):
+    
+    lecture = st.selectbox("Lecture",lname)
     attendence_file = st.file_uploader(label = "Upload file", type=["jpg","png","jfif"])
     submit_attendence=st.form_submit_button("Get Attendence")
     
