@@ -37,7 +37,7 @@ def save(img,name, bbox, width=180,height=227):
     cv2.imwrite(name+".jpg", imgCrop)
 
 def faces():
-    frame =cv2.imread("F:/VS code python/Python face-recognition try/Photos/jasraj.jpg")
+    frame =cv2.imread("F:/VS code python/Python face-recognition try/Photos/T3.jpg")
     gray = frame
     faces = detector(gray)
     fit =20
