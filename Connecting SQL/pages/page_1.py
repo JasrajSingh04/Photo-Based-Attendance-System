@@ -1,128 +1,47 @@
-
-from ast import Return
-from copy import deepcopy
-import datetime
-import imp
-
-from re import I
-from tkinter import Frame
-import cv2
-import glob
-import io
-import pyodbc
-from deepface import DeepFace
-from turtle import clear
-from matplotlib import image
-from mysqlx import Column
-import numpy as np
-import streamlit as st
-import mysql.connector
-import dlib
-import pandas as pd
-from PIL import Image,ImageEnhance
-import os
-from PIL import Image , ImageOps , ImageDraw , ImageFont
-from typer import Exit
-import face_recognition
 from prac import *
-from pages.page_2 import *
 
 
 
 
 
 
+def load_image(image_File):
+    img=Image.open(image_File)
+    return img
 
 
 
-def MyRec(rgb,x,y,w,h,v=20,color=(200,0,0),thikness =200):
-    """To draw stylish rectangle around the objects"""
-    cv2.line(rgb, (x,y),(x+v,y), color, thikness)
-    cv2.line(rgb, (x,y),(x,y+v), color, thikness)
-
-    cv2.line(rgb, (x+w,y),(x+w-v,y), color, thikness)
-    cv2.line(rgb, (x+w,y),(x+w,y+v), color, thikness)
-
-    cv2.line(rgb, (x,y+h),(x,y+h-v), color, thikness)
-    cv2.line(rgb, (x,y+h),(x+v,y+h), color, thikness)
-
-    cv2.line(rgb, (x+w,y+h),(x+w,y+h-v), color, thikness)
-    cv2.line(rgb, (x+w,y+h),(x+w-v,y+h), color, thikness)
-
-def save(img,name, bbox, width=180,height=227):
-    x, y, w, h = bbox
-    imgCrop = img[y:h, x: w]
-    imgCrop = cv2.resize(imgCrop, (width, height))#we need this line to reshape the images
-    cv2.imwrite(name+".jpg", imgCrop)
-
-def faces():
-    global newdir_lock
-    global new_path
-    newdir=datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    newdir_lock=newdir
-    os.mkdir("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/" + newdir)
-    
-    detector = dlib.get_frontal_face_detector()
-    new_path ="D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/Image_"
-    file_bytes = np.asarray(bytearray(attendence_file.read()), dtype=np.uint8)
-    opencv_image = cv2.imdecode(file_bytes, 1)  
-    frame =opencv_image
-    gray = frame
-    faces = detector(gray)
-    fit =20
-    # detect the face
-    for counter,face in enumerate(faces):
-        print(counter)
-        x1, y1 = face.left(), face.top()
-        x2, y2 = face.right(), face.bottom()
-        cv2.rectangle(frame,(x1,y1),(x2,y2),(220,255,220),1)
-        MyRec(frame, x1, y1, x2 - x1, y2 - y1, 10, (0,250,0), 3)
-        # save(gray,new_path+str(counter),(x1-fit,y1-fit,x2+fit,y2+fit))
-        save(gray,new_path+str(counter),(x1,y1,x2,y2))
-    frame = cv2.resize(frame,(800,800))
-    cv2.imshow("im1",frame) 
-    cv2.waitKey(0)
-    print("done saving")
+# clean_db=pd.DataFrame(rows,columns=["Roll no","Name","Prac"])
 
 
-lecture_name=run_query("Select * from lnames")
-lname=[]
-for lecture in lecture_name:
-    lnamefor=lecture[0]
-    lname.append(lnamefor)
-
-with st.form(key="Get_Attendence",clear_on_submit=True):
-    
-    lecture = st.selectbox("Lecture",lname)
-    attendence_file = st.file_uploader(label = "Upload file", type=["jpg","png","jfif"])
-    submit_attendence=st.form_submit_button("Get Attendence")
-    
+with st.form(key="StudentData",clear_on_submit=True):
+    input_rno=st.number_input("Enter Roll No",step=1)
+    input_sname=st.text_input("Enter Student Name")
+    input_standard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
+    image_File = st.file_uploader(label = "Upload file", type=["jpg","png"])
+    submit_code=st.form_submit_button("Execute")
 
 
-
-if attendence_file is not None:
-    faces()
-    st.success("done saving")
-    time = datetime.datetime.now().strftime('%Y-%m-%d')
-    locktime=time
-    run_query(f"alter table student_ca ADD COLUMN `{locktime}` varchar(255);")
-    photo_data=run_query("select photo_link from student_ca")
-    for data in photo_data:
-        image_link=data[0]
-        for img in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/*.jpg"):
-            ImageOfAttendece=cv2.imread(img)
-            ImageOfDatabase=cv2.imread(image_link)
-            resultmain=DeepFace.verify(ImageOfAttendece,ImageOfDatabase,model_name="Facenet", enforce_detection=False,detector_backend="mtcnn")
-            if resultmain["verified"] is True:
-                run_query(f"update student_ca set `{locktime}` = \"present\" where photo_link=\"{image_link}\" ")
-                break 
-    print("completed loop")
-    run_query(f"UPDATE student_ca  SET `{locktime}`=COALESCE(`{locktime}`,\"absent\");")
-    sql_query = pd.read_sql_query('''
-                              select * from student_ca
-                              '''
-                              ,mydb)
-    df=pd.DataFrame(sql_query)
-    df.to_csv(fr"{new_path}+{locktime}+.csv",index=False)
-    print("done")
-    run_query(f"alter table student_ca drop column `{locktime}`")
+try:
+    if submit_code:
+        get_image_name=run_query(f"select * from student_data where photoURL like \"D:/3rd Year Project/3rd-year-project/Connecting SQL/SQL FILES IMAGES/{image_File.name}\"")
+        get_sname=run_query(f"select * from student_data where StudentName like \"{input_sname}\" and studentstandard=\"{input_standard}\"")
+        get_roll_no=run_query(f"select * from student_data where studentRollNo like {input_rno} and studentstandard=\"{input_standard}\"")
+        if get_roll_no:
+            st.error(f"Roll no {input_rno} already exists In standard {input_standard}")
+        elif get_sname:
+            st.error(f"Student name {input_sname} already exists In standard {input_standard}")
+        elif get_image_name:
+            st.error(f"Image {image_File.name} already exist.Use a different Image name")
+        else:
+            imageface=face_recognition.load_image_file(image_File)
+            faceloc=face_recognition.face_locations(imageface)
+            if faceloc:
+                with open(os.path.join("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\ALL_IMAGES",image_File.name),"wb") as f:
+                    f.write(image_File.getbuffer())
+                run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{input_sname}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/Connecting SQL/SQL FILES IMAGES/{image_File.name}\")")
+                st.success("Submitted")
+            else:
+                st.error("Face is required in image")
+except:
+    st.error("Fill all the Columns")

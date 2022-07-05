@@ -1,25 +1,11 @@
 from prac import *
-from pages.page_1 import *
 
 
+with st.form(key="TeacherData",clear_on_submit=True):
+    input_teachername=st.text_input("Enter Teacher Name")
+    input_teacherclass=st.text_input("Enter Lecture Name")
+    submit_teacher=st.form_submit_button("Add")
 
-with st.form(key="lec_form",clear_on_submit=True):
-    input_lecname=st.text_input("Enter Student Name")
-    submit_lec=st.form_submit_button("Add lecture")
-
-
-
-try:
-    if submit_lec:
-        if input_lecname=="":
-            st.error("Enter Lecture Name")
-        else:
-            run_query(f"insert into lnames(lecture_name) VALUES(\"{input_lecname}\")")
-            st.success(f"{input_lecname} Added to Lecture list")
-except:
-    st.error("Enter Lecture Name")
- 
-
-rows=run_query("Select * from lnames")
-clean_db=pd.DataFrame(rows,columns=["Lecture Names"])
-st.dataframe(clean_db)
+if submit_teacher:
+    run_query(f"Insert Into teacher_data(TeacherName,TeacherLecture) VALUES (\"{input_teachername}\" , \"{input_teacherclass}\")")
+    st.success(f"Teacher name {input_teachername} added to teacher list ")
