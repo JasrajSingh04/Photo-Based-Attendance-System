@@ -24,7 +24,7 @@ with st.form(key="StudentData",clear_on_submit=True):
 
 try:
     if submit_code:
-        get_image_name=run_query(f"select * from student_data where photoURL like \"D:/3rd Year Project/3rd-year-project/Connecting SQL/SQL FILES IMAGES/{image_File.name}\"")
+        get_image_name=run_query(f"select * from student_data where photoURL like \"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\"")
         get_sname=run_query(f"select * from student_data where StudentName like \"{input_sname}\" and studentstandard=\"{input_standard}\"")
         get_roll_no=run_query(f"select * from student_data where studentRollNo like {input_rno} and studentstandard=\"{input_standard}\"")
         if get_roll_no:
@@ -39,7 +39,7 @@ try:
             if faceloc:
                 with open(os.path.join("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\ALL_IMAGES",image_File.name),"wb") as f:
                     f.write(image_File.getbuffer())
-                run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{input_sname}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/Connecting SQL/SQL FILES IMAGES/{image_File.name}\")")
+                run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{input_sname}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\")")
                 st.success("Submitted")
             else:
                 st.error("Face is required in image")
