@@ -57,18 +57,20 @@ cursor=mydb.cursor()
 # df.to_csv (r'F:\VS code python\Python face-recognition try\df.csv', index = False) # place 'r' before the path name
 # print("done saving")
 
-query = 'select * from lnames'
+query = 'select tt_lecturename,tt_fromtime,tt_totime  from timetable_data'
 
 cursor.execute(query)
   
 data = cursor.fetchall()
 
-lecture_name=data
+# print(data)
+
+list=[]
+
+for data_1 in data:
+  z = data_1[0] + " " + data_1[1]+ " to "+data_1[2]
+  
+  list.append(z)
 
 
-lname=[]
-for lecture in lecture_name:
-    lnamefor=lecture[0]
-    print(lnamefor)
-    lname.append(lnamefor)
-print(lname) 
+print(list)

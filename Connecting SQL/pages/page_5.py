@@ -3,6 +3,27 @@ from pages.page_1 import *
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # with st.form(key="lec_form",clear_on_submit=True):
 #     input_lecname=st.text_input("Enter Student Name")
 #     submit_lec=st.form_submit_button("Add lecture")
