@@ -57,20 +57,10 @@ cursor=mydb.cursor()
 # df.to_csv (r'F:\VS code python\Python face-recognition try\df.csv', index = False) # place 'r' before the path name
 # print("done saving")
 
-query = 'select tt_lecturename,tt_fromtime,tt_totime  from timetable_data'
+query = 'select distinct tt_standard from attendence_Data inner join timetable_data on timetable_data.tt_id=attendence_Data.att_timetableid where dateoflecture ="2022-07-11"'
 
 cursor.execute(query)
   
 data = cursor.fetchall()
 
-# print(data)
-
-list=[]
-
-for data_1 in data:
-  z = data_1[0] + " " + data_1[1]+ " to "+data_1[2]
-  
-  list.append(z)
-
-
-print(list)
+print(data)

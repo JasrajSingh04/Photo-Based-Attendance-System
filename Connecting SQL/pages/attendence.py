@@ -82,8 +82,8 @@ with st.form(key="getstandard",clear_on_submit=True):
 
 
 
-with st.form(key="GetAttendence",clear_on_submit=True):
-    date_in=st.date_input("Select Attendence Date",datetime.date.today())
+    with st.form(key="GetAttendence",clear_on_submit=True):
+        date_in=st.date_input("Select Attendence Date",datetime.date.today())
     lecture_name=st.selectbox("Enter lecture name",lnamelist)
 
     attendence_file = st.file_uploader(label = "Upload file", type=["jpg","png","jfif"])
