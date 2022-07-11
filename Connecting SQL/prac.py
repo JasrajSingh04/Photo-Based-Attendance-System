@@ -3,6 +3,7 @@ from copy import deepcopy
 import datetime
 import imp
 from re import I
+from runpy import run_module
 from tkinter import Frame
 import cv2
 import glob
@@ -49,9 +50,14 @@ def run_query(query):
 
 
 
+query=run_query("select studentid from student_data where photourl =  \"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/tf_1_2.jpg\" ")
 
 
+print(query[0][0])
 
+
+# for queries in query:
+#   print(queries[0])
 
 
 

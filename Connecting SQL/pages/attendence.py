@@ -7,19 +7,6 @@ from prac import *
 
 
 
-
-
-
-
-
-
-
- 
-
-
-
-
-
 def MyRec(rgb,x,y,w,h,v=20,color=(200,0,0),thikness =200):
     """To draw stylish rectangle around the objects"""
     cv2.line(rgb, (x,y),(x+v,y), color, thikness)
@@ -87,7 +74,7 @@ for teacher in teacher_name:
 with st.form(key="getstandard",clear_on_submit=True):
     studentstandard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
     submit_standard=st.form_submit_button("Enter standard")
-    lecture_name=run_query(f"select tt_lecturename from timetable_data where tt_standard= \"{studentstandard}\"  ")
+    lecture_name=run_query(f"select teacher_data.teacherlecture from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{studentstandard}\"")
     lnamelist=[]
     for lectures in lecture_name:
         lnamefor=lectures[0]
@@ -97,7 +84,6 @@ with st.form(key="getstandard",clear_on_submit=True):
 
 with st.form(key="GetAttendence",clear_on_submit=True):
     date_in=st.date_input("Select Attendence Date",datetime.date.today())
-    tname="empty"
     lecture_name=st.selectbox("Enter lecture name",lnamelist)
 
     attendence_file = st.file_uploader(label = "Upload file", type=["jpg","png","jfif"])
@@ -110,34 +96,34 @@ if submit_button:
         # time = datetime.datetime.now().strftime('%Y-%m-%d')
         # locktime=time
         # run_query(f"alter table student_ca ADD COLUMN `{locktime}` varchar(255);")
+        tname = run_query(f"select teacher_data.teacherid from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{studentstandard}\"")
+        for teacher in tname:
+            teacher = teacher[0]
+        lectureid=run_query(f"select timetable_data.tt_id from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where teacher_data.teacherid={teacher}")
         
         photo_data=run_query(f"select photourl from student_data where studentstandard= \"{studentstandard}\"")
         for data in photo_data:
             try:
                 if resultmain["verified"] is False:
-                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( \"{image_link}\" , \"{tname}\", \"{lecture_name}\" , \"absent\", \"{date_in}\" )")
+                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {teacher}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
             except:
                 pass
-            # try:
-            #     if resultmain["verified"] is True:
-            #             run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( \"{image_link}\" , \"{tname}\", \"{lecture_name}\" , \"present\", \"{date_in}\" )")
-            #     if resultmain["verified"] is False:
-            #             run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( \"{image_link}\" , \"{tname}\", \"{lecture_name}\" , \"absent\", \"{date_in}\" )")        
-            # except:
-                # pass
+         
             for img in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/*.jpg"):
                 image_link=data[0]
                 ImageOfAttendece=cv2.imread(img)
                 ImageOfDatabase=cv2.imread(image_link)
                 resultmain=DeepFace.verify(ImageOfAttendece,ImageOfDatabase,model_name="Facenet", enforce_detection=False,detector_backend="mtcnn")
+                studentid=run_query(f"select studentid from student_data where photourl = \"{image_link}\"")
             
                 if resultmain["verified"] is True:
+                    
                     print(resultmain["verified"])
-                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( \"{image_link}\" , \"{tname}\", \"{lecture_name}\" , \"present\", \"{date_in}\" )")
+                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {teacher}, {lectureid[0][0]} , \"present\", \"{date_in}\" )")
                     break
                 
         if resultmain["verified"] is False:
-                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( \"{image_link}\" , \"{tname}\", \"{lecture_name}\" , \"absent\", \"{date_in}\" )")
+                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {teacher}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
 
                 
                 # stuname=run_query(f"select studentname from student_data where photourl like \" {image_link} \" ")
