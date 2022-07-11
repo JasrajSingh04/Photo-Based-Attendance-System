@@ -1,7 +1,9 @@
 from prac import *
-from pages.page_1 import *
 
 
+
+with st.form(key="set_date",clear_on_submit=True):
+    set_date=st.date_input("Select Attendence Date",datetime.date.today())
 
 
 
