@@ -5,6 +5,7 @@ import glob
 import io
 
 from turtle import heading
+from cv2 import dft
 import mysql.connector
 from dis import Instruction
 from re import MULTILINE
@@ -17,11 +18,12 @@ from xml.etree.ElementTree import Comment
 import cv2
 import os
 import dlib
+import datetime
 from tkinter.filedialog import askdirectory
 from pip import main
 from deepface import DeepFace
-from pyparsing import col
-
+from pyparsing import Or, col
+from datetime import datetime
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -57,10 +59,76 @@ cursor=mydb.cursor()
 # df.to_csv (r'F:\VS code python\Python face-recognition try\df.csv', index = False) # place 'r' before the path name
 # print("done saving")
 
-query = 'select distinct tt_standard from attendence_Data inner join timetable_data on timetable_data.tt_id=attendence_Data.att_timetableid where dateoflecture ="2022-07-11"'
+query = "select tt_fromtime , tt_totime from timetable_data where tt_standard=\"syit\""
 
 cursor.execute(query)
   
 data = cursor.fetchall()
 
 print(data)
+
+
+time_fromdt="08:55:00"
+time_todt="09:25:00"
+
+time_fromdt_tot=datetime.strptime(time_fromdt, '%H:%M:%S').time()
+time_todt_tot=datetime.strptime(time_todt, '%H:%M:%S').time()
+
+
+for time in data:
+  time0=datetime.strptime(time[0], '%H:%M:%S').time()
+  time1=datetime.strptime(time[1], '%H:%M:%S').time()
+
+  if (time0<time_fromdt_tot and time1>time_todt_tot):
+    print("In between intervals")
+    print(time0 , time1)
+    print("    ")
+  elif time0>time_fromdt_tot and time1<time_todt_tot:
+    print("exeeding")
+    print(time0 , time1)
+    print("    ")
+  elif (time0<time_fromdt_tot or time0<time_todt_tot) and (time1>time_fromdt_tot or time1>time_todt_tot):
+    print("exceeding from left")
+    print(time0 , time1)
+    print("    ")
+  else:
+    print("not in between")  
+    print(time0 , time1)
+    print("    ")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # if not  time0 > time_fromdt_tot and time_todt_tot<time1:
+  #   print("In between")
+  #   print(time0 , time1)
+  #   print("\n")
+  # elif not time0<time_fromdt_tot or time1>time_todt_tot:
+  #   print("exceeding")
+  #   print(time0 , time1)
+    
+  # else:
+  #   if not  time0 > time_fromdt_tot:
+  #     print("not in between + exceeding")
+  #     print(time0 , time1)
+  #     print("\n")
+  #   elif not time_todt_tot<time1:
+  #     print("not in between + exceeding")
+  #     print(time0 , time1)
+  #     print("\n")
+  #   else:
+  #     print("not in between")
+  #     print(time0 , time1)
+  #     print("\n")

@@ -25,6 +25,9 @@ from typer import Exit
 import face_recognition
 
 
+
+st.sidebar.markdown("Main page")
+
 st.title("hello")
 
 
