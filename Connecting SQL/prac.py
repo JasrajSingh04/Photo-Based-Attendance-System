@@ -31,6 +31,9 @@ st.sidebar.markdown("Main page")
 st.title("hello")
 
 
+
+
+
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
@@ -69,6 +72,8 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # for queries in query:
 #   print(queries[0])
+
+
 
 
 
