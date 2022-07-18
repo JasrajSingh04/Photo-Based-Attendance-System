@@ -1,3 +1,5 @@
+import functools
+from tkinter import Button
 from prac import *
 
 
@@ -57,11 +59,26 @@ def page2():
       clean_db=pd.DataFrame(rows,columns=["Roll No","Student Name","Standard"])
       st.dataframe(clean_db)
 
-
-
 def page3():
-    st.markdown("# Page 3 🎉")
-    st.sidebar.markdown("# Page 3 🎉")
+    st.markdown("# Delete Student")
+    with st.form(key="GettingStudentStandard"):
+        input_standard=st.selectbox("Enter Standard",["Select a Name","FYIT","SYIT","TYIT"])
+        SubmitViewStudentData=st.form_submit_button("Submit")
+    
+    with st.form(key="GettingStudentName"):
+        StudentName=run_query(f"select studentname from student_data where studentstandard like \"{input_standard}\"")
+        ListOfNames=[]
+        for names in StudentName:
+            StudentNameFor=names[0]
+            ListOfNames.append(StudentNameFor)
+        StudentNameSeLect=st.selectbox("Enter Name",ListOfNames)
+        SubmitGettingStudentName=st.form_submit_button("Submit")
+    
+    if SubmitGettingStudentName:
+        run_query("SET FOREIGN_KEY_CHECKS=0")
+        run_query(f"delete from student_data where studentname=\"{StudentNameSeLect}\" and studentstandard=\"{input_standard}\"")
+        run_query("SET FOREIGN_KEY_CHECKS=1")
+        st.success(f"Deleted {StudentNameSeLect} from {input_standard}")
 
 page_names_to_funcs = {
     "Add Data": main_page,
