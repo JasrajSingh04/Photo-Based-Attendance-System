@@ -1,6 +1,6 @@
 from logging import PlaceHolder
 from tkinter.messagebox import NO
-from prac import *
+from  Homepage import *
 
 
 
