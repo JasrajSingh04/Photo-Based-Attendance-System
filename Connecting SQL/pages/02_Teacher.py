@@ -24,7 +24,7 @@ def main_page():
                 st.error(f"There is already a teacher named {FullTeacherName} of class {teacherstandard} with lecture {input_teacherclass.upper()}")
             else:
                 run_query(f"Insert Into teacher_data(TeacherName,TeacherLecture,teacherstandard) VALUES (\"{FullTeacherName}\" , \"{input_teacherclass.upper()}\" , \"{teacherstandard}\")")
-            st.success(f"Teacher name {FullTeacherName} added to teacher list ")
+                st.success(f"Teacher name {FullTeacherName} added to teacher list ")
         else:
             st.error("Fill all the fields")
 
@@ -72,6 +72,9 @@ def page3():
     if SubmitTeacherLecture:
         if input_standard  and TeacherNameSeLect and  InputLecture:
             run_query("SET FOREIGN_KEY_CHECKS=0")
+            run_query(f'''delete t from timetable_data t
+            inner join teacher_data e on t.tt_lecturename = e.teacherid 
+            where e.TeacherName = \"{TeacherNameSeLect}\" and e.teacherlecture=\"{InputLecture}\";''')
             run_query(f"delete from teacher_data where teachername=\"{TeacherNameSeLect}\" and teacherstandard=\"{input_standard}\" and teacherlecture=\"{InputLecture}\"")
             run_query("SET FOREIGN_KEY_CHECKS=1")
             st.success(f"Deleted {TeacherNameSeLect} from {input_standard}")

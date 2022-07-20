@@ -1,4 +1,5 @@
 from lib2to3.pytree import convert
+from pickle import TRUE
 from tracemalloc import start
 from pandas import to_datetime
 
@@ -39,6 +40,7 @@ def main_page():
     if submit_timetable:
         time_fromdt_tot=start_time
         time_todt_tot=end_time
+        timeistrue=False
         if not start_time<end_time:
             st.error("time error")
         else:
@@ -52,25 +54,36 @@ def main_page():
                     time0=datetime.datetime.strptime(time[0], '%H:%M:%S').time()
                     time1=datetime.datetime.strptime(time[1], '%H:%M:%S').time()
                     if check_query:
-                        st.error(f"There is Already a lecture from {time[0]} to {time[1]}")
+                        st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 1")
+                        timeistrue=False
                         break
-                    if (time0<=time_fromdt_tot and time1>=time_todt_tot):
-                        st.error(f"There is Already a lecture from {time[0]} to {time[1]}")
+                    elif (time0<time_fromdt_tot and time1>time_todt_tot):
+                        st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 2")
+                        timeistrue=False
                         break
-                    elif time0>=time_fromdt_tot and time1<=time_todt_tot:
-                        st.error(f"There is Already a lecture from {time[0]} to {time[1]}")
+                    elif time0>time_fromdt_tot and time1<time_todt_tot:
+                        st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 3")
+                        timeistrue=False
                         break
-                    elif (time0<=time_fromdt_tot or time0<=time_todt_tot) and (time1>=time_fromdt_tot or time1>=time_todt_tot):
-                        st.error(f"There is Already a lecture from {time[0]} to {time[1]}")
+                    elif (time0<time_fromdt_tot or time0<time_todt_tot) and (time1>time_fromdt_tot or time1>time_todt_tot):
+                        st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 4")
+                        timeistrue=False
                         break
                     else:
-                        run_query(f"Insert into timetable_data(tt_lecturename,tt_fromtime,tt_totime,tt_standard) VALUES ( {mainkey} , \"{start_time}\" , \"{end_time}\" , \"{standard_sel}\")")
-                        st.success(f"{input_ttname} Added to time table")
-                        break
+                        timeistrue=True
+                        pass
             else:
                 run_query(f"Insert into timetable_data(tt_lecturename,tt_fromtime,tt_totime,tt_standard) VALUES ( {mainkey} , \"{start_time}\" , \"{end_time}\" , \"{standard_sel}\")")
                 st.success(f"{input_ttname} Added to time table")
                 st.success("time query was not none")
+
+            if timeistrue is True:
+                if(time0<time_todt_tot and time1<time_todt_tot):
+                                run_query(f"Insert into timetable_data(tt_lecturename,tt_fromtime,tt_totime,tt_standard) VALUES ( {mainkey} , \"{start_time}\" , \"{end_time}\" , \"{standard_sel}\")")
+                                st.success(f"{input_ttname} Added to time table condition 1")
+                if  (time0>time_fromdt_tot and time1>time_fromdt_tot):
+                    run_query(f"Insert into timetable_data(tt_lecturename,tt_fromtime,tt_totime,tt_standard) VALUES ( {mainkey} , \"{start_time}\" , \"{end_time}\" , \"{standard_sel}\")")
+                    st.success(f"{input_ttname} Added to time table condition 2")
 
      
 def page2():

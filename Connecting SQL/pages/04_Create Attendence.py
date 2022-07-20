@@ -3,7 +3,7 @@ from unittest import result
 
 from matplotlib.cbook import contiguous_regions
 from regex import F
-from prac import *
+from  Homepage import *
 
 
 
@@ -52,7 +52,8 @@ def faces():
         # save(gray,new_path+str(counter),(x1-fit,y1-fit,x2+fit,y2+fit))
         save(gray,new_path+str(counter),(x1,y1,x2,y2))
     frame = cv2.resize(frame,(800,800))
-    cv2.imshow("im1",frame) 
+    cv2.imshow("im1",frame)
+    cv2.imwrite("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/Mainpicture")
     cv2.waitKey(0)  
     print("done saving")
 

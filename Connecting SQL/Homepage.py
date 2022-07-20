@@ -28,7 +28,7 @@ import face_recognition
 
 st.sidebar.markdown("Main page")
 
-st.title("hello")
+# st.title("hello")
 
 
 
