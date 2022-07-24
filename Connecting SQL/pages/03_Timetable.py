@@ -70,7 +70,7 @@ def main_page():
                         timeistrue=False
                         break
                     else:
-                        timeistrue=True
+                        timeistrue=True  
                         pass
             else:
                 run_query(f"Insert into timetable_data(tt_lecturename,tt_fromtime,tt_totime,tt_standard) VALUES ( {mainkey} , \"{start_time}\" , \"{end_time}\" , \"{standard_sel}\")")
@@ -94,7 +94,7 @@ def page2():
     
     if SubmitViewTimetableData:
       rows=run_query(f'''
-    select teacher_data.teacherLecture, timetable_Data.tt_totime,timetable_Data.tt_fromtime,timetable_Data.tt_standard 
+    select teacher_data.teacherLecture,timetable_Data.tt_fromtime, timetable_Data.tt_totime,timetable_Data.tt_standard 
     from timetable_data 
     inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{input_standard}\";
       ''')
@@ -104,8 +104,9 @@ def page2():
 
 
 def page3():
-    st.markdown("# Page 3 🎉")
-    st.sidebar.markdown("# Page 3 🎉")
+    st.markdown("Delete Lectures")
+    
+    
 
 page_names_to_funcs = {
     "Add Data": main_page,

@@ -1,10 +1,11 @@
 import functools
 from queue import Full
 from tkinter import Button
+from fastapi import Query
 
 from numpy import full
 from  Homepage import *
-
+import re
 
 
 
@@ -20,37 +21,37 @@ def load_image(image_File):
 def main_page():
    st.title("Add Data")
    with st.form(key="StudentData",clear_on_submit=True):
-    input_rno=st.number_input("Enter Roll No",step=1)
+    input_rno=st.number_input("Enter Roll No",step=1,min_value=1)
     input_sname=st.text_input("Enter First Name")
     input_sname_2=st.text_input("Enter Last Name")
     input_standard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
     image_File = st.file_uploader(label = "Upload file", type=["jpg","png"])
     submit_code=st.form_submit_button("Execute")
 
-    try:
-        if submit_code:
-            FullNameOfStudent=input_sname.capitalize()+" "+ input_sname_2.capitalize()
-            get_image_name=run_query(f"select * from student_data where photoURL like \"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\"")
-            get_sname=run_query(f"select * from student_data where StudentName like \"{FullNameOfStudent}\" and studentstandard=\"{input_standard}\"")
-            get_roll_no=run_query(f"select * from student_data where studentRollNo like {input_rno} and studentstandard=\"{input_standard}\"")
-            if get_roll_no:
-                st.error(f"Roll no {input_rno} already exists In standard {input_standard}")
-            elif get_sname:
-                st.error(f"Student name {FullNameOfStudent} already exists In standard {input_standard}")
-            elif get_image_name:
-                st.error(f"Image {image_File.name} already exist.Use a different Image name")
+
+    if submit_code:
+        FullNameOfStudent=input_sname.capitalize()+" "+ input_sname_2.capitalize()
+        FullNameOfStudent=re.sub(' +', ' ',FullNameOfStudent)
+        get_image_name=run_query(f"select * from student_data where photoURL like \"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\"")
+        get_sname=run_query(f"select * from student_data where StudentName like \"{FullNameOfStudent}\" and studentstandard=\"{input_standard}\"")
+        get_roll_no=run_query(f"select * from student_data where studentRollNo like {input_rno} and studentstandard=\"{input_standard}\"")
+        if get_roll_no:
+            st.error(f"Roll no {input_rno} already exists In standard {input_standard}")
+        elif get_sname:
+            st.error(f"Student name {FullNameOfStudent} already exists In standard {input_standard}")
+        elif get_image_name:
+            st.error(f"Image {image_File.name} already exist.Use a different Image name")
+        else:
+            imageface=face_recognition.load_image_file(image_File)
+            faceloc=face_recognition.face_locations(imageface)
+            if faceloc:
+                with open(os.path.join("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\ALL_IMAGES",image_File.name),"wb") as f:
+                    f.write(image_File.getbuffer())
+                run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{FullNameOfStudent}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\")")
+                st.success("Submitted")
             else:
-                imageface=face_recognition.load_image_file(image_File)
-                faceloc=face_recognition.face_locations(imageface)
-                if faceloc:
-                    with open(os.path.join("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\ALL_IMAGES",image_File.name),"wb") as f:
-                        f.write(image_File.getbuffer())
-                    run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{FullNameOfStudent}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\")")
-                    st.success("Submitted")
-                else:
-                    st.error("Face is required in image")
-    except:
-        st.error("Fill all the Columns")
+                st.error("Face is required in image")
+  
 
 
 def page2():
@@ -81,10 +82,16 @@ def page3():
         SubmitGettingStudentName=st.form_submit_button("Submit")
     
     if SubmitGettingStudentName:
+        try:
+            photoURL=run_query(f"select photourl from student_data where studentname like \"{StudentNameSeLect}\" and studentstandard like \"{input_standard}\" ")
+            for url in photoURL:
+                os.remove(url[0])
+        except:
+            pass
         run_query("SET FOREIGN_KEY_CHECKS=0")
         run_query(f"delete from student_data where studentname=\"{StudentNameSeLect}\" and studentstandard=\"{input_standard}\"")
         run_query("SET FOREIGN_KEY_CHECKS=1")
-        st.success(f"Deleted {StudentNameSeLect} from {input_standard}")
+        st.success(f"{StudentNameSeLect} was removed")
 
 page_names_to_funcs = {
     "Add Data": main_page,

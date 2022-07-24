@@ -1,4 +1,5 @@
 from logging import PlaceHolder
+from queue import Full
 from tkinter.messagebox import NO
 from  Homepage import *
 
@@ -18,6 +19,7 @@ def main_page():
     if submit_teacher:
         if not input_teachername == "" and not input_teachername_2 == "" and not input_teacherclass =="":
             FullTeacherName=input_teachername.capitalize() +" "+ input_teachername_2.capitalize()
+            FullTeacherName=re.sub(' +', ' ',FullTeacherName)
             check_if_teacher_exists=run_query(f"select *  from  teacher_data where teachername like \"{FullTeacherName}\" and Teacherlecture like \"{input_teacherclass.upper()}\" and Teacherstandard like \"{teacherstandard}\"")
             print(check_if_teacher_exists)
             if check_if_teacher_exists:
@@ -35,7 +37,7 @@ def page2():
     st.title("Show Teacher Data")
     with st.form(key="viewTeacherData",clear_on_submit=True):
         teacherstandard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
-        submit_viewteacherdata=st.form_submit_button("Add")  
+        submit_viewteacherdata=st.form_submit_button("View")  
 
     if submit_viewteacherdata:
       rows=run_query(f"Select teachername,teacherlecture,teacherstandard from teacher_Data where teacherstandard=\"{teacherstandard}\"")
@@ -52,6 +54,7 @@ def page3():
         SubmitViewTeacherData=st.form_submit_button("Submit")
     
     with st.form(key="GettingTeacherName"):
+        st.write("Note: Deleting A teacher from data will Delete all the lectures of the teacher+")
         TeacherName=run_query(f"select distinct teachername from teacher_data where teacherstandard like \"{input_standard}\"")
         ListOfNames=[]
         for names in TeacherName:
@@ -60,32 +63,30 @@ def page3():
         TeacherNameSeLect=st.selectbox("Enter Name",ListOfNames)
         SubmitGettingTeacherName=st.form_submit_button("Submit")
     
-    with st.form(key="GetTeacherClass"):
-        StandardsList=[]
-        TeacherCLass=run_query(f"select teacherlecture from teacher_Data where teachername like \"{TeacherNameSeLect}\" and teacherstandard like \"{input_standard}\"")
-        for standard in TeacherCLass:
-            TeacherMainLecture=standard[0]
-            StandardsList.append(TeacherMainLecture)
-        InputLecture=st.selectbox("Enter Lecture",StandardsList)
-        SubmitTeacherLecture=st.form_submit_button("Submit")
+  
 
-    if SubmitTeacherLecture:
-        if input_standard  and TeacherNameSeLect and  InputLecture:
+    if SubmitGettingTeacherName:
+        if input_standard  and TeacherNameSeLect :
             run_query("SET FOREIGN_KEY_CHECKS=0")
             run_query(f'''delete t from timetable_data t
             inner join teacher_data e on t.tt_lecturename = e.teacherid 
-            where e.TeacherName = \"{TeacherNameSeLect}\" and e.teacherlecture=\"{InputLecture}\";''')
-            run_query(f"delete from teacher_data where teachername=\"{TeacherNameSeLect}\" and teacherstandard=\"{input_standard}\" and teacherlecture=\"{InputLecture}\"")
+            where e.TeacherName = \"{TeacherNameSeLect}\"''')
+            run_query(f"delete from teacher_data where teachername=\"{TeacherNameSeLect}\" and teacherstandard=\"{input_standard}\"")
             run_query("SET FOREIGN_KEY_CHECKS=1")
             st.success(f"Deleted {TeacherNameSeLect} from {input_standard}")
         else:
             st.error("Fill all the fields")
+
+
+
 
 page_names_to_funcs = {
     "Add Data": main_page,
     "View Data": page2,
     "Delete Data": page3,
 }
+
+
 
 selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
 page_names_to_funcs[selected_page]()

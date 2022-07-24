@@ -9,6 +9,7 @@ import cv2
 import glob
 import io
 import pyodbc
+import re
 from deepface import DeepFace
 from turtle import clear
 from matplotlib import image

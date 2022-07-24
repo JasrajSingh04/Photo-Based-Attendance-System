@@ -3,7 +3,8 @@ import base64
 import glob
 
 import io
-
+import re
+import re
 from turtle import heading
 from cv2 import dft
 import mysql.connector
@@ -36,6 +37,48 @@ cursor=mydb.cursor()
 
 
   
+
+query = '''
+select photourl from student_data where studentname like \"ankur borade\" and studentstandard like \"FYIT\" 
+'''
+
+cursor.execute(query)
+  
+data = cursor.fetchall()
+
+
+print(data)
+
+for url in data:
+  print(url[0])
+  os.remove(url[0])
+
+
+
+# print(data)
+
+# for l in data:
+#   print(l[0]+" "+l[1]+" "+l[2])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Execute the query to get the file
 
 
@@ -59,42 +102,66 @@ cursor=mydb.cursor()
 # df.to_csv (r'F:\VS code python\Python face-recognition try\df.csv', index = False) # place 'r' before the path name
 # print("done saving")
 
-query = "select tt_fromtime , tt_totime from timetable_data where tt_standard=\"syit\""
-
-cursor.execute(query)
-  
-data = cursor.fetchall()
-
-print(data)
 
 
-time_fromdt="08:55:00"
-time_todt="09:25:00"
-
-time_fromdt_tot=datetime.strptime(time_fromdt, '%H:%M:%S').time()
-time_todt_tot=datetime.strptime(time_todt, '%H:%M:%S').time()
 
 
-for time in data:
-  time0=datetime.strptime(time[0], '%H:%M:%S').time()
-  time1=datetime.strptime(time[1], '%H:%M:%S').time()
 
-  if (time0<time_fromdt_tot and time1>time_todt_tot):
-    print("In between intervals")
-    print(time0 , time1)
-    print("    ")
-  elif time0>time_fromdt_tot and time1<time_todt_tot:
-    print("exeeding")
-    print(time0 , time1)
-    print("    ")
-  elif (time0<time_fromdt_tot or time0<time_todt_tot) and (time1>time_fromdt_tot or time1>time_todt_tot):
-    print("exceeding from left")
-    print(time0 , time1)
-    print("    ")
-  else:
-    print("not in between")  
-    print(time0 , time1)
-    print("    ")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# time_fromdt="08:55:00"
+# time_todt="09:25:00"
+
+# time_fromdt_tot=datetime.strptime(time_fromdt, '%H:%M:%S').time()
+# time_todt_tot=datetime.strptime(time_todt, '%H:%M:%S').time()
+
+
+# for time in data:
+#   time0=datetime.strptime(time[0], '%H:%M:%S').time()
+#   time1=datetime.strptime(time[1], '%H:%M:%S').time()
+
+#   if (time0<time_fromdt_tot and time1>time_todt_tot):
+#     print("In between intervals")
+#     print(time0 , time1)
+#     print("    ")
+#   elif time0>time_fromdt_tot and time1<time_todt_tot:
+#     print("exeeding")
+#     print(time0 , time1)
+#     print("    ")
+#   elif (time0<time_fromdt_tot or time0<time_todt_tot) and (time1>time_fromdt_tot or time1>time_todt_tot):
+#     print("exceeding from left")
+#     print(time0 , time1)
+#     print("    ")
+#   else:
+#     print("not in between")  
+#     print(time0 , time1)
+#     print("    ")
 
 
 

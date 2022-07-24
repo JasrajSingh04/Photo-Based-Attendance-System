@@ -24,9 +24,18 @@ with st.form(key="set_standard"):
     set_standard_button=st.form_submit_button("Enter Standard")
 
 
-if set_date_button:
+if set_standard_button:
     if not stdlist:
         st.error("No lectures were there on the day")
-# rows=run_query("Select * from lnames")
-# clean_db=pd.DataFrame(rows,columns=["Lecture Names"])
-# st.dataframe(clean_db)
+    rows=run_query(f'''
+    select studentname,teachername,teacherlecture,tt_fromtime,tt_totime,ispresent 
+    from attendence_data
+    inner join student_data on student_data.Studentid=attendence_data.att_studentid
+    inner join teacher_data on teacher_data.teacherid=attendence_data.att_teacherID
+    inner join timetable_data on timetable_data.tt_id=attendence_data.att_timetableid
+    where teacherstandard=\"{std_of_student}\" and dateoflecture=\"{set_date}\" ;
+
+
+    ''')
+    clean_db=pd.DataFrame(rows)
+    st.dataframe(clean_db)
