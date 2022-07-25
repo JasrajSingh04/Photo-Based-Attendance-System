@@ -26,7 +26,7 @@ from typer import Exit
 import face_recognition
 
 
-
+weeklist=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 st.sidebar.markdown("Main page")
 
 # st.title("hello")

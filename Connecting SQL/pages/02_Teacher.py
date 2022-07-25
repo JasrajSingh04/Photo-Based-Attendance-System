@@ -1,3 +1,4 @@
+from ast import Add
 from logging import PlaceHolder
 from queue import Full
 from tkinter.messagebox import NO
@@ -7,7 +8,7 @@ from  Homepage import *
 
 
 
-def main_page():
+def AddTeacher():
     st.title("Add Teacher Data")
     with st.form(key="TeacherData",clear_on_submit=True):
         input_teachername=st.text_input("Enter First Name")
@@ -33,7 +34,7 @@ def main_page():
 
 
 
-def page2():
+def ViewTeacher():
     st.title("Show Teacher Data")
     with st.form(key="viewTeacherData",clear_on_submit=True):
         teacherstandard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
@@ -47,7 +48,7 @@ def page2():
 
 
 
-def page3():
+def DeleteTeacher():
     st.markdown("# Delete Teacher")
     with st.form(key="GettingTeacherStandard"):
         input_standard=st.selectbox("Enter Standard",["Select a Standard","FYIT","SYIT","TYIT"])
@@ -76,17 +77,18 @@ def page3():
             st.success(f"Deleted {TeacherNameSeLect} from {input_standard}")
         else:
             st.error("Fill all the fields")
+            
 
 
 
 
 page_names_to_funcs = {
-    "Add Data": main_page,
-    "View Data": page2,
-    "Delete Data": page3,
+    "Add Teacher Data": AddTeacher,
+    "View Teacher Data": ViewTeacher,
+    "Delete Teacher Data": DeleteTeacher,
 }
 
 
 
-selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
+selected_page = st.sidebar.radio("Select a page", page_names_to_funcs.keys(),index=0)
 page_names_to_funcs[selected_page]()

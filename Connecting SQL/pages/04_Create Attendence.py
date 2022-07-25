@@ -1,3 +1,5 @@
+from calendar import week, weekday
+from datetime import date
 from sqlite3 import Date
 from tokenize import Number
 from unittest import result
@@ -97,23 +99,34 @@ for teacher in teacher_name:
     tnamelist.append(tnamefor)
 
 
-with st.form(key="getstandard",clear_on_submit=True):
+with st.form(key="getstandard",clear_on_submit=False):
     studentstandard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
+    date_in=st.date_input("Select Attendence Date",datetime.date.today())
     submit_standard=st.form_submit_button("Enter standard")
-    lecture_name=run_query(f"select teacher_data.teacherlecture from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{studentstandard}\"")
+    
+
+with st.form(key="getlecture",clear_on_submit=False):
+    date_inborn = date_in.strftime("%A")
+    st.write(f"Day of the week is {date_inborn} ")
+    lecture_name=run_query(f"select teacher_data.teacherlecture from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{studentstandard}\" and tt_dayofweek like \"{date_inborn}\"")
     lnamelist=[]
     for lectures in lecture_name:
         lnamefor=lectures[0]
         lnamelist.append(lnamefor)
-
-
-
-with st.form(key="GetAttendence",clear_on_submit=True):
-    date_in=st.date_input("Select Attendence Date",datetime.date.today())
     lecture_name=st.selectbox("Enter lecture name",lnamelist)
+    submit_button_for_teacher_name=st.form_submit_button("Submit")
 
+
+with st.form(key="GetTeacher",clear_on_submit=False):
+    TeacherNameForList=run_query(f"Select teachername from teacher_data where teacherlecture like \"{lecture_name}\"")
+    tnamelist=[]
+    for tnames in TeacherNameForList:
+        tnamefor=tnames[0]
+        tnamelist.append(tnamefor)
+    TeacherNameAttendence=st.selectbox("Select Teacher Name",tnamelist)
     attendence_file = st.file_uploader(label = "Upload file", type=["jpg","png","jfif"])
     submit_button=st.form_submit_button("Attendence")
+
 
 
 if submit_button:
@@ -143,7 +156,7 @@ if notverify:
 
 if submitverifypicture and attendence_file is not None:
     faces()
-    tname = run_query(f"select teacher_data.teacherid from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{studentstandard}\"")
+    tname = run_query(f"select teacher_data.teacherid from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{studentstandard}\" and teacherdata.teachername=\"{TeacherNameAttendence}\"")
     for teacher in tname:
         teacher = teacher[0]
     lectureid=run_query(f"select timetable_data.tt_id from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where teacher_data.teacherid={teacher}")

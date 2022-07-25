@@ -35,11 +35,12 @@ mydb = mysql.connector.connect(
 
 cursor=mydb.cursor()
 
+standard_sel="FYIT"
 
   
 
-query = '''
-select photourl from student_data where studentname like \"ankur borade\" and studentstandard like \"FYIT\" 
+query = f'''
+select  teachername ,Teacherlecture from teacher_data where teacherstandard=\"{standard_sel}\"  
 '''
 
 cursor.execute(query)
@@ -49,9 +50,11 @@ data = cursor.fetchall()
 
 print(data)
 
-for url in data:
-  print(url[0])
-  os.remove(url[0])
+
+
+# for url in data:
+#   print(url[0])
+#   os.remove(url[0])
 
 
 

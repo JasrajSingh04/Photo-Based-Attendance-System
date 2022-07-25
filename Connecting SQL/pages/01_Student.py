@@ -18,7 +18,7 @@ def load_image(image_File):
 
 # clean_db=pd.DataFrame(rows,columns=["Roll no","Name","Prac"])
 
-def main_page():
+def AddStudent():
    st.title("Add Data")
    with st.form(key="StudentData",clear_on_submit=True):
     input_rno=st.number_input("Enter Roll No",step=1,min_value=1)
@@ -51,10 +51,11 @@ def main_page():
                 st.success("Submitted")
             else:
                 st.error("Face is required in image")
-  
+                
+    
 
 
-def page2():
+def ViewStudent():
     st.title("View Data")
     with st.form(key="viewStudentData"):
         input_standard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
@@ -66,7 +67,7 @@ def page2():
       st.write(f"Viewing Data For {input_standard}")
       st.dataframe(clean_db)
 
-def page3():
+def DeleteStudent():
     st.markdown("# Delete Student")
     with st.form(key="GettingStudentStandard"):
         input_standard=st.selectbox("Enter Standard",["Select a Name","FYIT","SYIT","TYIT"])
@@ -92,12 +93,16 @@ def page3():
         run_query(f"delete from student_data where studentname=\"{StudentNameSeLect}\" and studentstandard=\"{input_standard}\"")
         run_query("SET FOREIGN_KEY_CHECKS=1")
         st.success(f"{StudentNameSeLect} was removed")
+        
+        
+
+
 
 page_names_to_funcs = {
-    "Add Data": main_page,
-    "View Data": page2,
-    "Delete Data": page3,
+    "Add Student Data": AddStudent,
+    "View Student Data": ViewStudent,
+    "Delete Student Data": DeleteStudent,
 }
 
-selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
+selected_page = st.sidebar.radio("Select a page", page_names_to_funcs.keys(),index=0)
 page_names_to_funcs[selected_page]()
