@@ -21,6 +21,11 @@ def AddTeacher():
         if not input_teachername == "" and not input_teachername_2 == "" and not input_teacherclass =="":
             FullTeacherName=input_teachername.capitalize() +" "+ input_teachername_2.capitalize()
             FullTeacherName=re.sub(' +', ' ',FullTeacherName)
+
+            input_teacherclass=re.sub(' +', ' ',input_teacherclass)
+
+            input_teacherclass = input_teacherclass.rstrip()
+            
             check_if_teacher_exists=run_query(f"select *  from  teacher_data where teachername like \"{FullTeacherName}\" and Teacherlecture like \"{input_teacherclass.upper()}\" and Teacherstandard like \"{teacherstandard}\"")
             print(check_if_teacher_exists)
             if check_if_teacher_exists:
