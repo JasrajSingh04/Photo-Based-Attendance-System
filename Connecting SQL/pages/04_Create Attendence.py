@@ -108,7 +108,7 @@ with st.form(key="getstandard",clear_on_submit=False):
 with st.form(key="getlecture",clear_on_submit=False):
     date_inborn = date_in.strftime("%A")
     st.write(f"Day of the week is {date_inborn} ")
-    lecture_name=run_query(f"select teacher_data.teacherlecture from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{studentstandard}\" and tt_dayofweek like \"{date_inborn}\"")
+    lecture_name=run_query(f"select distinct teacher_data.teacherlecture from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{studentstandard}\" and tt_dayofweek like \"{date_inborn}\"")
     lnamelist=[]
     for lectures in lecture_name:
         lnamefor=lectures[0]
@@ -118,12 +118,29 @@ with st.form(key="getlecture",clear_on_submit=False):
 
 
 with st.form(key="GetTeacher",clear_on_submit=False):
-    TeacherNameForList=run_query(f"Select teachername from teacher_data where teacherlecture like \"{lecture_name}\"")
+    TeacherNameForList=run_query(f"select distinct teacher_data.teachername from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{studentstandard}\" and teacher_data.teacherlecture like \"{lecture_name}\"")
     tnamelist=[]
     for tnames in TeacherNameForList:
         tnamefor=tnames[0]
         tnamelist.append(tnamefor)
     TeacherNameAttendence=st.selectbox("Select Teacher Name",tnamelist)
+    submit_getTeacher=st.form_submit_button("Submit")
+
+with st.form(key="keytimings",clear_on_submit=False):
+    gettime=run_query(
+        f'''
+    select  timetable_data.tt_fromtime, timetable_data.tt_totime from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid
+    where timetable_data.tt_standard=\"{studentstandard}\" and teacher_data.teacherlecture like \"{lecture_name}\" and teacher_data.teachername like \"{TeacherNameAttendence}\" and timetable_Data.tt_Dayofweek like \"{date_inborn}\"
+'''
+    )
+    timelist=[]
+    for times in gettime:
+        fromtime=times[0]
+        totime=times[1]
+        time_join=fromtime+" to "+totime
+        timelist.append(time_join)
+    
+    TimeForLecture=st.selectbox("Select Time of lecture",timelist)
     attendence_file = st.file_uploader(label = "Upload file", type=["jpg","png","jfif"])
     submit_button=st.form_submit_button("Attendence")
 
@@ -133,6 +150,9 @@ if submit_button:
     if attendence_file is not None:
         verify_faces()
         image1=Image.open("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock_main+"/Mainpicture.jpg")
+
+
+
 
 with st.form(key="Verifypicture"):
     if image1 is not None:
@@ -147,6 +167,10 @@ with st.form(key="Verifypicture"):
     with col2:
         notverify=st.form_submit_button("Disapprove")
 
+
+
+
+
 if submitverifypicture and attendence_file is None:
     st.error("Fill all the fields")
 
@@ -154,18 +178,46 @@ if notverify:
     st.error("Photo not verfied")
 
 
+
+
+
+
 if submitverifypicture and attendence_file is not None:
     faces()
-    tname = run_query(f"select teacher_data.teacherid from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where timetable_data.tt_standard=\"{studentstandard}\" and teacherdata.teachername=\"{TeacherNameAttendence}\"")
-    for teacher in tname:
-        teacher = teacher[0]
-    lectureid=run_query(f"select timetable_data.tt_id from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid where teacher_data.teacherid={teacher}")
+    timesplit=TimeForLecture.split(" to ")
+    totimeforquery=timesplit[1]
+    fromtimeforquery=timesplit[0]
 
+    print(timesplit)
+    
+
+    tname = run_query(f'''select teacher_data.teacherid from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid 
+    where teacher_data.teacherstandard like \"{studentstandard}\" 
+    and teacher_data.teachername like \"{TeacherNameAttendence}\" 
+    and teacher_data.teacherlecture like \"{lecture_name}\" 
+
+    ''')
+
+    print(tname)
+    print(totimeforquery)
+    print(fromtimeforquery)
+
+
+    
+    lectureid=run_query(f'''select timetable_data.tt_id from timetable_data 
+    inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid 
+    where teacher_data.teacherid={tname[0][0]}
+    and timetable_data.tt_totime=\"{totimeforquery}\" 
+    and  timetable_Data.tt_fromtime=\"{fromtimeforquery}\" 
+    and timetable_data.tt_dayofweek like \"{date_inborn}\"
+    ''')
     photo_data=run_query(f"select photourl from student_data where studentstandard= \"{studentstandard}\"")
+
     for data in photo_data:
         try:
             if resultmain["verified"] is False:
-                run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {teacher}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
+                run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
+                
         except:
             pass
         
@@ -179,11 +231,12 @@ if submitverifypicture and attendence_file is not None:
             if resultmain["verified"] is True:
                 
                 print(resultmain["verified"])
-                run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {teacher}, {lectureid[0][0]} , \"present\", \"{date_in}\" )")
+                run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"present\", \"{date_in}\" )")
+                
                 break
             
     if resultmain["verified"] is False:
-                run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {teacher}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
+                run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
 
     print("completed loop")
     st.success("added data")
