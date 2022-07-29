@@ -1,9 +1,11 @@
+from ast import Delete
 from lib2to3.pytree import convert
 from pickle import TRUE
 from tracemalloc import start
 from pandas import to_datetime
 
 from regex import W
+from requests import delete
 from  Homepage import *
 
 
@@ -121,11 +123,28 @@ def DeleteTT():
 
 
 
-page_names_to_funcs = {
-    "Add Timetable Data": AddTT,
-    "View Timetable Data": ViewTT,
-    "Delete Timetable Data": DeleteTT,
-}
+# page_names_to_funcs = {
+#     "Add Timetable Data": AddTT,
+#     "View Timetable Data": ViewTT,
+#     "Delete Timetable Data": DeleteTT,
+# }
 
-selected_page = st.sidebar.radio("Select a page", page_names_to_funcs.keys(),index=0)
-page_names_to_funcs[selected_page]()
+# selected_page = st.sidebar.radio("Select a page", page_names_to_funcs.keys(),index=0)
+# page_names_to_funcs[selected_page]()
+
+
+SelectedMenuTimeTable =option_menu(
+  menu_title="TimeTable",
+  menu_icon="list-task",
+  options=["Add","View","Delete"],
+  icons=["book","book","book"],
+  orientation="horizontal"
+)
+
+
+if SelectedMenuTimeTable=="Add":
+    AddTT()
+elif SelectedMenuTimeTable=="View":
+    ViewTT()
+elif SelectedMenuTimeTable=="Delete":
+    DeleteTT()

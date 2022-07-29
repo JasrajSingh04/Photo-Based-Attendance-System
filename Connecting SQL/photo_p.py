@@ -3,6 +3,7 @@ import base64
 import glob
 
 import io
+from random import random
 import re
 import re
 from turtle import heading
@@ -26,6 +27,8 @@ from deepface import DeepFace
 from pyparsing import Or, col
 from datetime import datetime
 
+from scipy import rand
+
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
@@ -40,7 +43,8 @@ standard_sel="FYIT"
   
 
 query = f'''
-select  teachername ,Teacherlecture from teacher_data where teacherstandard=\"{standard_sel}\"  
+select  timetable_data.tt_fromtime, timetable_data.tt_totime from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid
+ where timetable_data.tt_standard=\"FYIT\" and teacher_data.teacherlecture like \"MATHS 1\" and teacher_data.teachername like \"malika kaur\" and timetable_Data.tt_Dayofweek like \"monday\"
 '''
 
 cursor.execute(query)
@@ -48,7 +52,35 @@ cursor.execute(query)
 data = cursor.fetchall()
 
 
-print(data)
+lecture="MATHS G4 AND G5                  sd"
+
+print(lecture)
+
+FullNameOfStudent=re.sub(' +', ' ',lecture)
+print(FullNameOfStudent)
+
+
+# timelist=[]
+
+# for time in data:
+
+#   x=time[0]
+
+#   y=time[1]
+
+#   listoftimes=x+" to "+y
+#   timelist.append(listoftimes)
+  
+
+
+# randomvar=timelist[0]
+
+# print(randomvar)
+
+# x=randomvar.split(" to ")
+
+# print(x[0] , x[1])
+
 
 
 

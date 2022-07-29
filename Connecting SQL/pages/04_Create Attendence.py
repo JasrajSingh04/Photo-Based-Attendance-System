@@ -56,9 +56,8 @@ def faces():
         # save(gray,new_path+str(counter),(x1-fit,y1-fit,x2+fit,y2+fit))
         save(gray,new_path+str(counter),(x1,y1,x2,y2))
     frame = cv2.resize(frame,(800,800))
-    cv2.imshow("im1",frame)
     cv2.imwrite("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/Mainpicture.jpg",frame)
-    st.success("done saving")
+    
 
 def verify_faces():
     global newdir_lock_main
@@ -197,11 +196,7 @@ if submitverifypicture and attendence_file is not None:
     and teacher_data.teacherlecture like \"{lecture_name}\" 
 
     ''')
-
-    print(tname)
-    print(totimeforquery)
-    print(fromtimeforquery)
-
+    
 
     
     lectureid=run_query(f'''select timetable_data.tt_id from timetable_data 
@@ -212,34 +207,38 @@ if submitverifypicture and attendence_file is not None:
     and timetable_data.tt_dayofweek like \"{date_inborn}\"
     ''')
     photo_data=run_query(f"select photourl from student_data where studentstandard= \"{studentstandard}\"")
-
-    for data in photo_data:
-        try:
-            if resultmain["verified"] is False:
-                run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
-                
-        except:
-            pass
-        
-        for img in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/*.jpg"):
-            image_link=data[0]
-            ImageOfAttendece=cv2.imread(img)
-            ImageOfDatabase=cv2.imread(image_link)
-            resultmain=DeepFace.verify(ImageOfAttendece,ImageOfDatabase,model_name="Facenet", enforce_detection=False,detector_backend="mtcnn")
-            studentid=run_query(f"select studentid from student_data where photourl = \"{image_link}\"")
-        
-            if resultmain["verified"] is True:
-                
-                print(resultmain["verified"])
-                run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"present\", \"{date_in}\" )")
-                
-                break
+    
+    with st.spinner("Wait for it.It may take up to 2 minutes depending upon the number of students"):
+        for data in photo_data:
+            try:
+                if resultmain["verified"] is False:
+                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
+            except:
+                pass
             
+            for img in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/*.jpg"):
+                
+                image_link=data[0]
+                ImageOfAttendece=cv2.imread(img)
+                ImageOfDatabase=cv2.imread(image_link)
+                resultmain=DeepFace.verify(ImageOfAttendece,ImageOfDatabase,model_name="Facenet", enforce_detection=False,detector_backend="mtcnn")
+                studentid=run_query(f"select studentid from student_data where photourl = \"{image_link}\"")
+            
+                if resultmain["verified"] is True:
+                    
+                    print(resultmain["verified"])
+                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"present\", \"{date_in}\" )")
+                    
+                    break
+        time.sleep(0.5)
+
     if resultmain["verified"] is False:
                 run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
 
     print("completed loop")
-    st.success("added data")
+    AttendenceSuccess=st.success(f"Attendence Successfully created for {studentstandard} for date {date_in}")
+    time.sleep(3)
+    AttendenceSuccess.empty()
 
 
 

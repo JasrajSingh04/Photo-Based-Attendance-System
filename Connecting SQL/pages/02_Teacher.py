@@ -9,7 +9,7 @@ from  Homepage import *
 
 
 def AddTeacher():
-    st.title("Add Teacher Data")
+    # st.title("Add Teacher Data")
     with st.form(key="TeacherData",clear_on_submit=True):
         input_teachername=st.text_input("Enter First Name")
         input_teachername_2=st.text_input("Enter Last Name")
@@ -21,9 +21,7 @@ def AddTeacher():
         if not input_teachername == "" and not input_teachername_2 == "" and not input_teacherclass =="":
             FullTeacherName=input_teachername.capitalize() +" "+ input_teachername_2.capitalize()
             FullTeacherName=re.sub(' +', ' ',FullTeacherName)
-
             input_teacherclass=re.sub(' +', ' ',input_teacherclass)
-
             input_teacherclass = input_teacherclass.rstrip()
             
             check_if_teacher_exists=run_query(f"select *  from  teacher_data where teachername like \"{FullTeacherName}\" and Teacherlecture like \"{input_teacherclass.upper()}\" and Teacherstandard like \"{teacherstandard}\"")
@@ -40,7 +38,7 @@ def AddTeacher():
 
 
 def ViewTeacher():
-    st.title("Show Teacher Data")
+    # st.title("Show Teacher Data")
     with st.form(key="viewTeacherData",clear_on_submit=True):
         teacherstandard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
         submit_viewteacherdata=st.form_submit_button("View")  
@@ -54,7 +52,7 @@ def ViewTeacher():
 
 
 def DeleteTeacher():
-    st.markdown("# Delete Teacher")
+    # st.markdown("# Delete Teacher")
     with st.form(key="GettingTeacherStandard"):
         input_standard=st.selectbox("Enter Standard",["Select a Standard","FYIT","SYIT","TYIT"])
         SubmitViewTeacherData=st.form_submit_button("Submit")
@@ -87,13 +85,30 @@ def DeleteTeacher():
 
 
 
-page_names_to_funcs = {
-    "Add Teacher Data": AddTeacher,
-    "View Teacher Data": ViewTeacher,
-    "Delete Teacher Data": DeleteTeacher,
-}
+# page_names_to_funcs = {
+#     "Add Teacher Data": AddTeacher,
+#     "View Teacher Data": ViewTeacher,
+#     "Delete Teacher Data": DeleteTeacher,
+# }
 
 
 
-selected_page = st.sidebar.radio("Select a page", page_names_to_funcs.keys(),index=0)
-page_names_to_funcs[selected_page]()
+# selected_page = st.sidebar.radio("Select a page", page_names_to_funcs.keys(),index=0)
+# page_names_to_funcs[selected_page]()
+
+
+SelectedMenuTeacher =option_menu(
+  menu_title="Teacher",
+  menu_icon="list-task",
+  options=["Add","View","Delete"],
+  icons=["book","book","book"],
+  orientation="horizontal"
+)
+
+
+if SelectedMenuTeacher=="Add":
+    AddTeacher()
+elif SelectedMenuTeacher=="View":
+    ViewTeacher()
+elif SelectedMenuTeacher=="Delete":
+    DeleteTeacher()
