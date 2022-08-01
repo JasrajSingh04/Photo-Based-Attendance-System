@@ -44,16 +44,13 @@ def AddStudent():
         
         if get_roll_no:
             RollNoError=st.error(f"Roll no {input_rno} already exists In standard {input_standard}")
-            time.sleep(3)
-            RollNoError.empty()
+            RemoveMessage(RollNoError)
         elif get_sname:
             NameError=st.error(f"Student name {FullNameOfStudent} already exists In standard {input_standard}")
-            time.sleep(3)
-            NameError.empty()
+            RemoveMessage(NameError)
         elif get_image_name:
             ImageError=st.error(f"Image {image_File.name} already exist.Use a different Image name")
-            time.sleep(3)
-            ImageError.empty()
+            RemoveMessage(ImageError)
         else:
             imageface=face_recognition.load_image_file(image_File)
             faceloc=face_recognition.face_locations(imageface)
@@ -62,14 +59,13 @@ def AddStudent():
                     f.write(image_File.getbuffer())
                 run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{FullNameOfStudent}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\")")
                 StudentAddSuccess=st.success(f"Student {FullNameOfStudent} added to {input_standard}")
-                time.sleep(3)
-                StudentAddSuccess.empty()
-                st.session_state=False
+                RemoveMessage(StudentAddSuccess)
+                
             else:
                 StudentFailToAdd=st.error("Face is required in image")
                 time.sleep(3)
                 StudentFailToAdd.empty()
-                st.session_state=False
+                
 
 
 def ViewStudent():
@@ -114,7 +110,7 @@ def DeleteStudent():
         RemoveStudentSuccess=st.success(f"{StudentNameSeLect} was removed from {input_standard}")
         time.sleep(3)
         RemoveStudentSuccess.empty()
-        st.session_state=False
+       
         
 
 

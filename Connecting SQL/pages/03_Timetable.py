@@ -1,6 +1,7 @@
-from ast import Delete
+from ast import Delete, With
 from lib2to3.pytree import convert
 from pickle import TRUE
+from tkinter.tix import Select
 from tracemalloc import start
 from pandas import to_datetime
 
@@ -118,11 +119,64 @@ def ViewTT():
 
 def DeleteTT():
     st.markdown("Delete Lectures")
-    
-    
+    with st.form(key="StandardTimeTable"):
+        TimeTableDeleteStandard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
+        TimeTableWeekDaySelect=st.selectbox("Enter day of the week",weeklist)
+        SubmitTimeTableStandard=st.form_submit_button("Submit")
 
+    with st.form(key="GetTeacherName"):
+        TimeTableDeleteTeacherName_list=[]
+        TimeTableDeleteTeacherName= run_query(f'''select distinct teacher_data.teachername from timetable_data 
+        inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid 
+        where timetable_data.tt_standard="{TimeTableDeleteStandard}" and tt_dayofweek like "{TimeTableWeekDaySelect}"''')
+        for names in TimeTableDeleteTeacherName:
+            nameslist=names[0]
+            TimeTableDeleteTeacherName_list.append(nameslist)
+        TimeTableDeleteSelectTeacherName=st.selectbox("Enter Teacher Name",TimeTableDeleteTeacherName_list)
+        SubmitTTteachername=st.form_submit_button("Submit")
 
+    with st.form(key="GetLectureName"):
+        GetTTLectureName=run_query(f''' select distinct teacher_data.teacherlecture from teacher_Data 
+        inner join timetable_Data on timetable_data.tt_lecturename=teacher_data.teacherid 
+        where timetable_data.tt_standard="{TimeTableDeleteStandard}" and timetable_Data.tt_dayofweek like "{TimeTableWeekDaySelect}" and teacher_data.teachername like "{TimeTableDeleteSelectTeacherName}"
+        ''')
+        TTDeleteLectureList=[]
+        for lecturenames in GetTTLectureName:
+            ttlecture=lecturenames[0]
+            TTDeleteLectureList.append(ttlecture)
+        SelectTTlecturename=st.selectbox("Enter Lecture Name",TTDeleteLectureList)
+        SubmitTTlecturename=st.form_submit_button("Submit")
 
+    with st.form(key="GetTTtime"):
+        gettime=run_query(
+            f'''
+        select timetable_data.tt_fromtime, timetable_data.tt_totime from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid
+        where timetable_data.tt_standard=\"{TimeTableDeleteStandard}\" and teacher_data.teacherlecture like \"{SelectTTlecturename}\" and teacher_data.teachername like \"{TimeTableDeleteSelectTeacherName}\" and timetable_Data.tt_Dayofweek like \"{TimeTableWeekDaySelect}\"
+        ''')
+        timelist=[]
+        for times in gettime:
+            fromtime=times[0]
+            totime=times[1]
+            time_join=fromtime+" to "+totime
+            timelist.append(time_join)
+        TimeForLecture=st.selectbox("Select Time of lecture",timelist)
+        SubmitTimeData=st.form_submit_button("Submit")
+
+    if SubmitTimeData:
+        timesplit=TimeForLecture.split(" to ")
+        totimeforquery=timesplit[1]
+        fromtimeforquery=timesplit[0]
+        run_query("SET FOREIGN_KEY_CHECKS=0")
+        run_query(f'''delete t from timetable_data t
+            inner join teacher_data e on t.tt_lecturename = e.teacherid 
+            where e.TeacherName = \"{TimeTableDeleteSelectTeacherName}\" and t.tt_standard like \"{TimeTableDeleteStandard}\" 
+            and t.tt_dayofweek like "{TimeTableWeekDaySelect}"
+            and e.teacherlecture like "{SelectTTlecturename}"
+            and t.tt_totime like "{totimeforquery}"
+            and t.tt_fromtime like "{fromtimeforquery}"
+                ''')
+        run_query("SET FOREIGN_KEY_CHECKS=1")
+        st.success("Succesfully deleted")
 # page_names_to_funcs = {
 #     "Add Timetable Data": AddTT,
 #     "View Timetable Data": ViewTT,

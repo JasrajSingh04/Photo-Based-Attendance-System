@@ -48,7 +48,7 @@ selected_menu =option_menu(
 )
 
 if selected_menu=="Students":
-  webbrowser.open("http://localhost:8501/Student")
+  webbrowser.open("Student")
   #  st.markdown('<a href="Student" target="_self">Students</a>', unsafe_allow_html=True)
   # pkle.load(open('D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\pages\\01_Student.py', 'rb'))
   # url ="http://localhost:8501/Student"
@@ -87,6 +87,9 @@ def run_query(query):
         return data
 
 
+def RemoveMessage(message):
+    time.sleep(3)
+    message.empty()
 
 hide_streamlit_style = """
             <style>

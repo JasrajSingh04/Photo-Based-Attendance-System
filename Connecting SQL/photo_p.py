@@ -26,8 +26,9 @@ from pip import main
 from deepface import DeepFace
 from pyparsing import Or, col
 from datetime import datetime
-
+import streamlit as st
 from scipy import rand
+import time 
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -41,23 +42,45 @@ cursor=mydb.cursor()
 standard_sel="FYIT"
 
   
+def returnlist(query):
+  with mydb.cursor() as cur:
+        cur.execute(query)
+        data= cur.fetchall()
+        mydb.commit()
+        itemlist=[]
+        for items in data:
+          itemlist.append(items[0])
+        return itemlist
 
-query = f'''
-select  timetable_data.tt_fromtime, timetable_data.tt_totime from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid
- where timetable_data.tt_standard=\"FYIT\" and teacher_data.teacherlecture like \"MATHS 1\" and teacher_data.teachername like \"malika kaur\" and timetable_Data.tt_Dayofweek like \"monday\"
-'''
+def removemessage(successORnot):
+    time.sleep(3)
+    successORnot.empty()
 
-cursor.execute(query)
+
+button = st.button("jod")
+
+if button:
+  successmeassage=st.success("clicked")
+  removemessage(successORnot=successmeassage)
+
+
+
+# query = f'''
+# select  timetable_data.tt_fromtime, timetable_data.tt_totime from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid
+#  where timetable_data.tt_standard=\"FYIT\" and teacher_data.teacherlecture like \"MATHS 1\" and teacher_data.teachername like \"malika kaur\" and timetable_Data.tt_Dayofweek like \"monday\"
+# '''
+
+# cursor.execute(query)
   
-data = cursor.fetchall()
+# data = cursor.fetchall()
 
 
-lecture="MATHS G4 AND G5                  sd"
+# lecture="MATHS G4 AND G5                  sd"
 
-print(lecture)
+# print(lecture)
 
-FullNameOfStudent=re.sub(' +', ' ',lecture)
-print(FullNameOfStudent)
+# FullNameOfStudent=re.sub(' +', ' ',lecture)
+# print(FullNameOfStudent)
 
 
 # timelist=[]
