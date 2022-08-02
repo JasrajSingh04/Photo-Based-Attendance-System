@@ -32,7 +32,7 @@ def AddTeacher():
                 run_query(f"Insert Into teacher_data(TeacherName,TeacherLecture,teacherstandard) VALUES (\"{FullTeacherName}\" , \"{input_teacherclass.upper()}\" , \"{teacherstandard}\")")
                 st.success(f"Teacher name {FullTeacherName} added to teacher list ")
         else:
-            st.error("Fill all the fields")
+            UserMessage("error","Fill all the fields",3)
 
 
 

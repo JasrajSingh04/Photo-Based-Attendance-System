@@ -166,6 +166,7 @@ def DeleteTT():
         timesplit=TimeForLecture.split(" to ")
         totimeforquery=timesplit[1]
         fromtimeforquery=timesplit[0]
+
         run_query("SET FOREIGN_KEY_CHECKS=0")
         run_query(f'''delete t from timetable_data t
             inner join teacher_data e on t.tt_lecturename = e.teacherid 
@@ -176,6 +177,8 @@ def DeleteTT():
             and t.tt_fromtime like "{fromtimeforquery}"
                 ''')
         run_query("SET FOREIGN_KEY_CHECKS=1")
+
+
         st.success("Succesfully deleted")
 # page_names_to_funcs = {
 #     "Add Timetable Data": AddTT,

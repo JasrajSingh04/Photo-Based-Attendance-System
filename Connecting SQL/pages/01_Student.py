@@ -1,3 +1,4 @@
+from email import message
 import functools
 from queue import Full
 from tkinter import Button, Menu
@@ -32,40 +33,45 @@ def AddStudent():
 
 
     if submit_code:
-        FullNameOfStudent=input_sname.capitalize()+" "+ input_sname_2.capitalize()
-        FullNameOfStudent=re.sub(' +', ' ',FullNameOfStudent)
-        FullNameOfStudent=FullNameOfStudent.rstrip()
-        
-        
-        get_image_name=run_query(f"select * from student_data where photoURL like \"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\"")
-        get_sname=run_query(f"select * from student_data where StudentName like \"{FullNameOfStudent}\" and studentstandard=\"{input_standard}\"")
-        get_roll_no=run_query(f"select * from student_data where studentRollNo like {input_rno} and studentstandard=\"{input_standard}\"")
-        
-        
-        if get_roll_no:
-            RollNoError=st.error(f"Roll no {input_rno} already exists In standard {input_standard}")
-            RemoveMessage(RollNoError)
-        elif get_sname:
-            NameError=st.error(f"Student name {FullNameOfStudent} already exists In standard {input_standard}")
-            RemoveMessage(NameError)
-        elif get_image_name:
-            ImageError=st.error(f"Image {image_File.name} already exist.Use a different Image name")
-            RemoveMessage(ImageError)
-        else:
-            imageface=face_recognition.load_image_file(image_File)
-            faceloc=face_recognition.face_locations(imageface)
-            if faceloc:
-                with open(os.path.join("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\ALL_IMAGES",image_File.name),"wb") as f:
-                    f.write(image_File.getbuffer())
-                run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{FullNameOfStudent}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\")")
-                StudentAddSuccess=st.success(f"Student {FullNameOfStudent} added to {input_standard}")
-                RemoveMessage(StudentAddSuccess)
-                
+        if not input_rno=="" and not input_sname =="" and not input_sname_2 =="" and not input_standard =="" and image_File is not None:
+            FullNameOfStudent=input_sname.capitalize()+" "+ input_sname_2.capitalize()
+            FullNameOfStudent=re.sub(' +', ' ',FullNameOfStudent)
+            FullNameOfStudent=FullNameOfStudent.rstrip()
+            
+            
+            get_image_name=run_query(f"select * from student_data where photoURL like \"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\"")
+            get_sname=run_query(f"select * from student_data where StudentName like \"{FullNameOfStudent}\" and studentstandard=\"{input_standard}\"")
+            get_roll_no=run_query(f"select * from student_data where studentRollNo like {input_rno} and studentstandard=\"{input_standard}\"")
+            
+            
+            if get_roll_no:
+                UserMessage(messagetype="error",UserMessage=f"Roll no {input_rno} already exists In standard {input_standard}",timeForMessage=3)
+
+            elif get_sname:
+                UserMessage(messagetype="error",UserMessage=f"Student name {FullNameOfStudent} already exists In standard {input_standard}",timeForMessage=3)
+
+            elif get_image_name:
+                UserMessage(messagetype="error",UserMessage=f"Image {image_File.name} already exist.Use a different Image name",timeForMessage=3)
+
             else:
-                StudentFailToAdd=st.error("Face is required in image")
-                time.sleep(3)
-                StudentFailToAdd.empty()
-                
+                imageface=face_recognition.load_image_file(image_File)
+                faceloc=face_recognition.face_locations(imageface)
+                if faceloc:
+                    if len(faceloc) >1 :
+                        UserMessage(messagetype="error",UserMessage="More than 1 face is detected",timeForMessage=3)
+                    else:
+                        with open(os.path.join("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\ALL_IMAGES",image_File.name),"wb") as f:
+                            f.write(image_File.getbuffer())
+                        run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{FullNameOfStudent}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\")")
+                    
+                        UserMessage(messagetype="success", UserMessage=f"Student {FullNameOfStudent} added to {input_standard}",timeForMessage=3)
+                    
+                else:
+                    StudentFailToAdd=st.error("Face is required in image")
+                    time.sleep(3)
+                    StudentFailToAdd.empty()
+        else:
+            UserMessage(messagetype="error",UserMessage="Fill all the fields",timeForMessage=3)        
 
 
 def ViewStudent():

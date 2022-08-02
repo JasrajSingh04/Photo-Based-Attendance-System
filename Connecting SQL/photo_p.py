@@ -1,34 +1,40 @@
-from ast import Import
-import base64
-import glob
 
-import io
-from random import random
-import re
-import re
-from turtle import heading
-from cv2 import dft
-import mysql.connector
-from dis import Instruction
-from re import MULTILINE
-from tkinter import *
-from tkinter import filedialog
-from tkinter import ttk
-import tkinter
-import pandas as pd
-from xml.etree.ElementTree import Comment
-import cv2
-import os
-import dlib
+
+from ast import Return
+from cgi import test
+from copy import deepcopy
 import datetime
-from tkinter.filedialog import askdirectory
-from pip import main
+import imp
+import importlib
+import time
+from re import I
+from runpy import run_module
+from tkinter import Frame
+import cv2
+import glob
+import io
+import pyodbc
+import re
+import hydralit_components as hc
 from deepface import DeepFace
-from pyparsing import Or, col
-from datetime import datetime
+from turtle import clear
+from matplotlib import image
+from mysqlx import Column
+import numpy as np
 import streamlit as st
-from scipy import rand
-import time 
+import mysql.connector
+import dlib
+import pandas as pd
+import pickle as pkle
+from PIL import Image,ImageEnhance
+import os
+from PIL import Image , ImageOps , ImageDraw , ImageFont
+from typer import Exit
+import face_recognition
+import sys
+from streamlit_option_menu import option_menu
+import webbrowser
+
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -52,18 +58,24 @@ def returnlist(query):
           itemlist.append(items[0])
         return itemlist
 
-def removemessage(successORnot):
-    time.sleep(3)
-    successORnot.empty()
 
 
-button = st.button("jod")
-
-if button:
-  successmeassage=st.success("clicked")
-  removemessage(successORnot=successmeassage)
+# button = st.button()
 
 
+image_File="F:\\VS code python\\Python face-recognition try\\Photos\\test_sample_4.jpg"
+
+imageface=face_recognition.load_image_file(image_File)
+faceloc=face_recognition.face_locations(imageface)
+
+print(faceloc)
+print(type(faceloc))
+print(len(faceloc))
+
+if len(faceloc) > 1:
+  print("more than 2 faces are detected")
+else:
+  print("proper")
 
 # query = f'''
 # select  timetable_data.tt_fromtime, timetable_data.tt_totime from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid

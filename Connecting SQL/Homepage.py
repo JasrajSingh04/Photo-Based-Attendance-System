@@ -78,7 +78,7 @@ mydb = mysql.connector.connect(
 myc=mydb.cursor()
 
 
-@st.experimental_memo(ttl=10)
+
 def run_query(query):
     with mydb.cursor() as cur:
         cur.execute(query)
@@ -90,6 +90,24 @@ def run_query(query):
 def RemoveMessage(message):
     time.sleep(3)
     message.empty()
+
+
+def UserMessage(messagetype:str,UserMessage : str,timeForMessage:int):
+
+  if messagetype == "error" or messagetype =="Error":
+    message=st.error(UserMessage)
+  elif messagetype == "success" or messagetype=="success":
+    message=st.success(UserMessage)
+  elif messagetype == "warning" or messagetype=="warning":
+    message=st.warning(UserMessage)
+  time.sleep(timeForMessage)
+  message.empty()
+
+
+
+
+
+
 
 hide_streamlit_style = """
             <style>
