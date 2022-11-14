@@ -4,7 +4,6 @@ from ast import Return
 from cgi import test
 from copy import deepcopy
 import datetime
-import imp
 import importlib
 import time
 from re import I
@@ -48,7 +47,7 @@ cursor=mydb.cursor()
 standard_sel="FYIT"
 
   
-def returnlist(query):
+def returnlist(query:str):
   with mydb.cursor() as cur:
         cur.execute(query)
         data= cur.fetchall()
@@ -59,25 +58,33 @@ def returnlist(query):
         return itemlist
 
 
+def run_query(query):
+    with mydb.cursor() as cur:
+        cur.execute(query)
+        data= cur.fetchall()
+        mydb.commit()
+        return data
 
+lecturelist=run_query("select studentname from student_data")
+print(lecturelist[0][range(0,len(lecturelist))])
 # button = st.button()
 
 
-image_File="F:\\VS code python\\Python face-recognition try\\Photos\\test_sample_4.jpg"
+# image_File="F:\\VS code python\\Python face-recognition try\\Photos\\test_sample_4.jpg"
 
-imageface=face_recognition.load_image_file(image_File)
-faceloc=face_recognition.face_locations(imageface)
+# imageface=face_recognition.load_image_file(image_File)
+# faceloc=face_recognition.face_locations(imageface)
 
-print(faceloc)
-print(type(faceloc))
-print(len(faceloc))
+# print(faceloc)
+# print(type(faceloc))
+# print(len(faceloc))
 
-if len(faceloc) > 1:
-  print("more than 2 faces are detected")
-else:
-  print("proper")
+# if len(faceloc) > 1:
+#   print("more than 2 faces are detected")
+# else:
+#   print("proper")
 
-# query = f'''
+# # query = f'''
 # select  timetable_data.tt_fromtime, timetable_data.tt_totime from timetable_data inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid
 #  where timetable_data.tt_standard=\"FYIT\" and teacher_data.teacherlecture like \"MATHS 1\" and teacher_data.teachername like \"malika kaur\" and timetable_Data.tt_Dayofweek like \"monday\"
 # '''

@@ -34,6 +34,7 @@ def AddStudent():
 
     if submit_code:
         if not input_rno=="" and not input_sname =="" and not input_sname_2 =="" and not input_standard =="" and image_File is not None:
+
             FullNameOfStudent=input_sname.capitalize()+" "+ input_sname_2.capitalize()
             FullNameOfStudent=re.sub(' +', ' ',FullNameOfStudent)
             FullNameOfStudent=FullNameOfStudent.rstrip()
@@ -58,8 +59,9 @@ def AddStudent():
                 faceloc=face_recognition.face_locations(imageface)
                 if faceloc:
                     if len(faceloc) >1 :
-                        UserMessage(messagetype="error",UserMessage="More than 1 face is detected",timeForMessage=3)
+                        UserMessage(messagetype="error",UserMessage="Multiple faces detected",timeForMessage=3)
                     else:
+
                         with open(os.path.join("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\ALL_IMAGES",image_File.name),"wb") as f:
                             f.write(image_File.getbuffer())
                         run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{FullNameOfStudent}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\")")
@@ -67,9 +69,7 @@ def AddStudent():
                         UserMessage(messagetype="success", UserMessage=f"Student {FullNameOfStudent} added to {input_standard}",timeForMessage=3)
                     
                 else:
-                    StudentFailToAdd=st.error("Face is required in image")
-                    time.sleep(3)
-                    StudentFailToAdd.empty()
+                    UserMessage("error","Face is required in an image",3)
         else:
             UserMessage(messagetype="error",UserMessage="Fill all the fields",timeForMessage=3)        
 
@@ -113,9 +113,7 @@ def DeleteStudent():
         run_query("SET FOREIGN_KEY_CHECKS=0")
         run_query(f"delete from student_data where studentname=\"{StudentNameSeLect}\" and studentstandard=\"{input_standard}\"")
         run_query("SET FOREIGN_KEY_CHECKS=1")
-        RemoveStudentSuccess=st.success(f"{StudentNameSeLect} was removed from {input_standard}")
-        time.sleep(3)
-        RemoveStudentSuccess.empty()
+        UserMessage(messagetype="success",UserMessage=f"{StudentNameSeLect} was removed from {input_standard}",timeForMessage=3)    
        
         
 

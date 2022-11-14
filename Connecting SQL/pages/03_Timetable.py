@@ -51,53 +51,72 @@ def AddTT():
         submit_timetable=st.form_submit_button("Add lecture Data")
 
     if submit_timetable:
-        time_fromdt_tot=start_time
-        time_todt_tot=end_time
-        timeistrue=False
-        if not start_time<end_time:
-            st.error("time error")
-        else:
-            ttname_tokey=run_query(f"select teacherid from teacher_data where teacherlecture = \"{input_ttname}\" and teachername=\"{input_TeacherName}\"  ")
-            for key in ttname_tokey:
-                mainkey=key[0]
-            time_query=run_query(f"select tt_fromtime , tt_totime from timetable_data where tt_standard=\"{standard_sel}\" and tt_dayofweek=\"{SelectWeekDay}\"")
-            check_query=run_query(f"select * from timetable_data where tt_fromtime=\"{start_time}\" or tt_totime=\"{end_time}\" and tt_standard=\"{standard_sel}\"")
-            if time_query:
-                for time in time_query:
-                    time0=datetime.datetime.strptime(time[0], '%H:%M:%S').time()
-                    time1=datetime.datetime.strptime(time[1], '%H:%M:%S').time()
-                    # if check_query:
-                    #     st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 1")
-                    #     timeistrue=False
-                    #     break
-                    if (time0<time_fromdt_tot and time1>time_todt_tot):
-                        st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 2")
-                        timeistrue=False
-                        break
-                    elif time0>time_fromdt_tot and time1<time_todt_tot:
-                        st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 3")
-                        timeistrue=False
-                        break
-                    elif (time0<time_fromdt_tot or time0<time_todt_tot) and (time1>time_fromdt_tot or time1>time_todt_tot):
-                        st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 4")
-                        timeistrue=False
-                        break
-                    else:
-                        timeistrue=True  
-                        pass
+        if standard_sel  and input_ttname and  input_TeacherName:
+            time_fromdt_tot=start_time
+            time_todt_tot=end_time
+            timeistrue=False
+            if not start_time<end_time:
+                # st.error("time error")
+                UserMessage(messagetype="error",UserMessage="The end time of lecture cannot be before the start time",timeForMessage=3)
             else:
-                run_query(f"Insert into timetable_data(tt_lecturename,tt_fromtime,tt_totime,tt_standard,tt_Dayofweek) VALUES ( {mainkey} , \"{start_time}\" , \"{end_time}\" , \"{standard_sel}\" , \"{SelectWeekDay}\")")
-                st.success(f"{input_ttname} Added to time table")
-                st.success("time query was not none")
+                ttname_tokey=run_query(f"select teacherid from teacher_data where teacherlecture = \"{input_ttname}\" and teachername=\"{input_TeacherName}\"  ")
+                for key in ttname_tokey:
+                    mainkey=key[0]
+                time_query=run_query(f"select tt_fromtime , tt_totime from timetable_data where tt_standard=\"{standard_sel}\" and tt_dayofweek=\"{SelectWeekDay}\"")
 
-            if timeistrue is True:
-                if(time0<time_todt_tot and time1<time_todt_tot):
-                                run_query(f"Insert into timetable_data(tt_lecturename,tt_fromtime,tt_totime,tt_standard,tt_Dayofweek) VALUES ( {mainkey} , \"{start_time}\" , \"{end_time}\" , \"{standard_sel}\" , \"{SelectWeekDay}\")")
-                                st.success(f"{input_ttname} Added to time table condition 1")
-                if  (time0>time_fromdt_tot and time1>time_fromdt_tot):
+                check_query=run_query(f"select * from timetable_data where tt_fromtime=\"{start_time}\" or tt_totime=\"{end_time}\" and tt_standard=\"{standard_sel}\" and tt_lecturename like {mainkey} and tt_dayofweek like \"{SelectWeekDay}\"")
+                
+                if check_query:
+                    UserMessage("error",f"There is already a lecture named {standard_sel} with timings from {start_time} to {end_time} of standard {standard_sel} with teacher {input_TeacherName}",3)
+                    return 
+                
+                if time_query:
+                    for time in time_query:
+                        time0=datetime.datetime.strptime(time[0], '%H:%M:%S').time()
+                        time1=datetime.datetime.strptime(time[1], '%H:%M:%S').time()
+                        # if check_query:
+                        #     st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 1")
+                        #     timeistrue=False
+                        #     break
+                        if (time0<time_fromdt_tot and time1>time_todt_tot):
+                            # st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 2")
+                            UserMessage(messagetype="error",UserMessage=f"There is Already a lecture from {time[0]} to {time[1]}",timeForMessage=3)
+                            timeistrue=False
+                            break
+                        elif time0>time_fromdt_tot and time1<time_todt_tot:
+                            UserMessage(messagetype="error",UserMessage=f"There is Already a lecture from {time[0]} to {time[1]}",timeForMessage=3)
+                            # st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 3")
+                            timeistrue=False
+                            break
+                        elif (time0<time_fromdt_tot or time0<time_todt_tot) and (time1>time_fromdt_tot or time1>time_todt_tot):
+                            UserMessage(messagetype="error",UserMessage=f"There is Already a lecture from {time[0]} to {time[1]}",timeForMessage=3)
+                            # st.error(f"There is Already a lecture from {time[0]} to {time[1]} of condition 4")
+                            timeistrue=False
+                            break
+                        else:
+                            timeistrue=True  
+                            pass
+                else:
                     run_query(f"Insert into timetable_data(tt_lecturename,tt_fromtime,tt_totime,tt_standard,tt_Dayofweek) VALUES ( {mainkey} , \"{start_time}\" , \"{end_time}\" , \"{standard_sel}\" , \"{SelectWeekDay}\")")
-                    st.success(f"{input_ttname} Added to time table condition 2")
+                    # st.success(f"{input_ttname} Added to time table")
+                    UserMessage(messagetype="success",UserMessage=f"{input_ttname} Added to time table",timeForMessage=3)
+                    # st.success("time query was not none")
 
+
+                if timeistrue is True:
+
+                    if(time0<time_todt_tot and time1<time_todt_tot):
+
+                        run_query(f"Insert into timetable_data(tt_lecturename,tt_fromtime,tt_totime,tt_standard,tt_Dayofweek) VALUES ( {mainkey} , \"{start_time}\" , \"{end_time}\" , \"{standard_sel}\" , \"{SelectWeekDay}\")")
+                        UserMessage(messagetype="success",UserMessage=f"{input_ttname} Added to time table",timeForMessage=3)
+
+                    if  (time0>time_fromdt_tot and time1>time_fromdt_tot):
+
+                        run_query(f"Insert into timetable_data(tt_lecturename,tt_fromtime,tt_totime,tt_standard,tt_Dayofweek) VALUES ( {mainkey} , \"{start_time}\" , \"{end_time}\" , \"{standard_sel}\" , \"{SelectWeekDay}\")")
+                        UserMessage(messagetype="success",UserMessage=f"{input_ttname} Added to time table",timeForMessage=3)
+    
+        else:
+             UserMessage("error","Fill all the fields",3)
      
 def ViewTT():
     st.title("View Data")
@@ -114,6 +133,9 @@ def ViewTT():
       ''')
       clean_db=pd.DataFrame(rows,columns=["Teachername","Lecture Name","From","To","Standard","Day of Week"])
       st.dataframe(clean_db)
+
+
+
 
 
 
@@ -179,7 +201,7 @@ def DeleteTT():
         run_query("SET FOREIGN_KEY_CHECKS=1")
 
 
-        st.success("Succesfully deleted")
+        UserMessage("success",f"Succesfully deleted {SelectTTlecturename} from Time table",3)
 # page_names_to_funcs = {
 #     "Add Timetable Data": AddTT,
 #     "View Timetable Data": ViewTT,

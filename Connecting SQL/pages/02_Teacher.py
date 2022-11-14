@@ -25,12 +25,15 @@ def AddTeacher():
             input_teacherclass = input_teacherclass.rstrip()
             
             check_if_teacher_exists=run_query(f"select *  from  teacher_data where teachername like \"{FullTeacherName}\" and Teacherlecture like \"{input_teacherclass.upper()}\" and Teacherstandard like \"{teacherstandard}\"")
-            print(check_if_teacher_exists)
+            
             if check_if_teacher_exists:
-                st.error(f"There is already a teacher named {FullTeacherName} of class {teacherstandard} with lecture {input_teacherclass.upper()}")
+                UserMessage(messagetype="error",UserMessage=f"There is already a teacher named {FullTeacherName} of class {teacherstandard} with lecture {input_teacherclass.upper()}",timeForMessage=3) 
+
             else:
                 run_query(f"Insert Into teacher_data(TeacherName,TeacherLecture,teacherstandard) VALUES (\"{FullTeacherName}\" , \"{input_teacherclass.upper()}\" , \"{teacherstandard}\")")
-                st.success(f"Teacher name {FullTeacherName} added to teacher list ")
+                UserMessage(messagetype="success",UserMessage=f"Teacher name {FullTeacherName} added to teacher list",timeForMessage=3) 
+                st.experimental_rerun()
+                
         else:
             UserMessage("error","Fill all the fields",3)
 
@@ -58,7 +61,7 @@ def DeleteTeacher():
         SubmitViewTeacherData=st.form_submit_button("Submit")
     
     with st.form(key="GettingTeacherName"):
-        st.write("Note: Deleting A teacher from data will Delete all the lectures of the teacher+")
+        st.write("Note: Deleting A teacher from data will also Delete all the lectures from timetable of that teacher")
         TeacherName=run_query(f"select distinct teachername from teacher_data where teacherstandard like \"{input_standard}\"")
         ListOfNames=[]
         for names in TeacherName:
@@ -77,9 +80,13 @@ def DeleteTeacher():
             where e.TeacherName = \"{TeacherNameSeLect}\"''')
             run_query(f"delete from teacher_data where teachername=\"{TeacherNameSeLect}\" and teacherstandard=\"{input_standard}\"")
             run_query("SET FOREIGN_KEY_CHECKS=1")
-            st.success(f"Deleted {TeacherNameSeLect} from {input_standard}")
+            
+            UserMessage(messagetype="success",UserMessage=f"Deleted {TeacherNameSeLect} from {input_standard}",timeForMessage=3)
+            st.experimental_rerun()
+            
         else:
-            st.error("Fill all the fields")
+            UserMessage(messagetype="error",UserMessage="Fill all the fields",timeForMessage=3)
+            
             
 
 

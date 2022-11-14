@@ -91,11 +91,11 @@ def verify_faces():
 image1=None
 
 
-teacher_name=run_query("Select teachername from teacher_data")
-tnamelist=[]
-for teacher in teacher_name:
-    tnamefor=teacher[0]
-    tnamelist.append(tnamefor)
+# teacher_name=run_query("Select teachername from teacher_data")
+# tnamelist=[]
+# for teacher in teacher_name:
+#     tnamefor=teacher[0]
+#     tnamelist.append(tnamefor)
 
 
 with st.form(key="getstandard",clear_on_submit=False):
@@ -144,11 +144,12 @@ with st.form(key="keytimings",clear_on_submit=False):
     submit_button=st.form_submit_button("Attendence")
 
 
-
 if submit_button:
     if attendence_file is not None:
         verify_faces()
         image1=Image.open("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock_main+"/Mainpicture.jpg")
+    else:
+        UserMessage("error","Add a photo",3)
 
 
 
@@ -171,15 +172,16 @@ with st.form(key="Verifypicture"):
 
 
 if submitverifypicture and attendence_file is None:
-    st.error("Fill all the fields")
+    UserMessage("error","Fill all the fields",3)
 
 if notverify:
-    st.error("Photo not verfied")
+    UserMessage("error","Photo not verified",3)
 
 
 
 
 
+ 
 
 if submitverifypicture and attendence_file is not None:
     faces()
@@ -197,8 +199,6 @@ if submitverifypicture and attendence_file is not None:
 
     ''')
     
-
-    
     lectureid=run_query(f'''select timetable_data.tt_id from timetable_data 
     inner join teacher_data on timetable_data.tt_lecturename=teacher_data.teacherid 
     where teacher_data.teacherid={tname[0][0]}
@@ -207,40 +207,36 @@ if submitverifypicture and attendence_file is not None:
     and timetable_data.tt_dayofweek like \"{date_inborn}\"
     ''')
     photo_data=run_query(f"select photourl from student_data where studentstandard= \"{studentstandard}\"")
-    
-    with st.spinner("Wait for it.It may take up to 2 minutes depending upon the number of students"):
-        for data in photo_data:
-            try:
-                if resultmain["verified"] is False:
-                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
-            except:
-                pass
-            
-            for img in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/*.jpg"):
+    if not photo_data:
+      UserMessage("error","There are no students information available in the class",3)
+    else:
+        with st.spinner("Wait for it.It may take up to 2 minutes depending upon the number of students"):
+            for data in photo_data:
+                try:
+                    if resultmain["verified"] is False:
+                        run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
+                except:
+                    pass
+                for img in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/*.jpg"):
+                    
+                    image_link=data[0]
+                    ImageOfAttendece=cv2.imread(img)
+                    ImageOfDatabase=cv2.imread(image_link)
+                    resultmain=DeepFace.verify(ImageOfAttendece,ImageOfDatabase,model_name="Facenet", enforce_detection=False,detector_backend="mtcnn")
+                    studentid=run_query(f"select studentid from student_data where photourl = \"{image_link}\"")
                 
-                image_link=data[0]
-                ImageOfAttendece=cv2.imread(img)
-                ImageOfDatabase=cv2.imread(image_link)
-                resultmain=DeepFace.verify(ImageOfAttendece,ImageOfDatabase,model_name="Facenet", enforce_detection=False,detector_backend="mtcnn")
-                studentid=run_query(f"select studentid from student_data where photourl = \"{image_link}\"")
-            
-                if resultmain["verified"] is True:
-                    
-                    print(resultmain["verified"])
-                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"present\", \"{date_in}\" )")
-                    
-                    break
-        time.sleep(0.5)
+                    if resultmain["verified"] is True:
+                        print(resultmain["verified"])
+                        run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"present\", \"{date_in}\" )")
+                        
+                        break
+            time.sleep(0.5)
 
-    if resultmain["verified"] is False:
-                run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
+        if resultmain["verified"] is False:
+                    run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
 
-    print("completed loop")
-    AttendenceSuccess=st.success(f"Attendence Successfully created for {studentstandard} for date {date_in}")
-    time.sleep(3)
-    AttendenceSuccess.empty()
-
-
+        UserMessage("success",f"Attendence Successfully created for {studentstandard} for date {date_in}",5)
+  
 
 
 

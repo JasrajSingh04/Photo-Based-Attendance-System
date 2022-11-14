@@ -35,29 +35,23 @@ import sys
 from streamlit_option_menu import option_menu
 import webbrowser
 
+#viewing other pages in homepage:
+      # sys.path.append("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\pages")
+      # func=__import__("01_Student")
+      # selected_menu =option_menu(
+      #   menu_title="Main Menu",
+      #   options=["Home","Students","Teacher","Attendence"],
+      #   orientation="horizontal"
+      # )
+      # if selected_menu=="Students":
+      #   webbrowser.open("Student")
+      #   #  st.markdown('<a href="Student" target="_self">Students</a>', unsafe_allow_html=True)
+      #   # pkle.load(open('D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\pages\\01_Student.py', 'rb'))
+      #   # url ="http://localhost:8501/Student"
+      #   # webbrowser.open(url)
 
-sys.path.append("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\pages")
-
-func=__import__("01_Student")
-
-
-selected_menu =option_menu(
-  menu_title="Main Menu",
-  options=["Home","Students","Teacher","Attendence"],
-  orientation="horizontal"
-)
-
-if selected_menu=="Students":
-  webbrowser.open("Student")
-  #  st.markdown('<a href="Student" target="_self">Students</a>', unsafe_allow_html=True)
-  # pkle.load(open('D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\pages\\01_Student.py', 'rb'))
-  # url ="http://localhost:8501/Student"
-  # webbrowser.open(url)
-
-
-
-if selected_menu=="Home":
-  st.write("Welcome to homepage")
+      # if selected_menu=="Home":
+      #   st.write("Welcome to homepage")
     
 weeklist=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 st.sidebar.markdown("Main page")
@@ -87,21 +81,17 @@ def run_query(query):
         return data
 
 
-def RemoveMessage(message):
-    time.sleep(3)
-    message.empty()
-
 
 def UserMessage(messagetype:str,UserMessage : str,timeForMessage:int):
 
-  if messagetype == "error" or messagetype =="Error":
-    message=st.error(UserMessage)
-  elif messagetype == "success" or messagetype=="success":
-    message=st.success(UserMessage)
-  elif messagetype == "warning" or messagetype=="warning":
-    message=st.warning(UserMessage)
-  time.sleep(timeForMessage)
-  message.empty()
+    if messagetype == "error" or messagetype =="Error":
+      message=st.error(UserMessage)
+    elif messagetype == "success" or messagetype=="SUCCESS":
+      message=st.success(UserMessage)
+    elif messagetype == "warning" or messagetype=="Warning":
+      message=st.warning(UserMessage)
+    time.sleep(timeForMessage)
+    message.empty()
 
 
 
