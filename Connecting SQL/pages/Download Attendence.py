@@ -7,9 +7,6 @@ with st.form(key="set_date"):
     set_date=st.date_input("Select Attendence Date",datetime.date.today())
     set_date_button=st.form_submit_button("Enter Date")
 
-
-
-
 with st.form(key="set_standard",clear_on_submit=False):
     datequery=run_query(f'''
     select distinct tt_standard from attendence_Data
@@ -26,6 +23,7 @@ with st.form(key="set_standard",clear_on_submit=False):
 if set_standard_button:
     if not stdlist:
         st.error("No lectures were there on the day")
+        st.stop()
     rows=run_query(f'''
     select StudentRollNo,studentname,teachername,teacherlecture,tt_fromtime,tt_totime,ispresent 
     from attendence_data
@@ -35,7 +33,7 @@ if set_standard_button:
     where teacherstandard=\"{std_of_student}\" and dateoflecture=\"{set_date}\" ;
     ''')
     clean_db=pd.DataFrame(rows,columns=["Roll No","Student Name","Teacher Name","Lecture","From","To","Present"])
-    clean_db.sort_values(by=["Roll No"],ascending=True)
+    clean_db=clean_db.sort_values(by=["Roll No"],ascending=True)
     df=st.dataframe(clean_db)
                                                                                                                                                                                                                                                                                            
     #csv file df

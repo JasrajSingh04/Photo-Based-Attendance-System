@@ -119,7 +119,6 @@ def AddTT():
              UserMessage("error","Fill all the fields",3)
      
 def ViewTT():
-    st.title("View Data")
     with st.form(key="viewTimetableData"):
         input_standard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
         SelectWeekDay=st.selectbox("Enter Day of the week",weeklist)
@@ -185,23 +184,24 @@ def DeleteTT():
         SubmitTimeData=st.form_submit_button("Submit")
 
     if SubmitTimeData:
-        timesplit=TimeForLecture.split(" to ")
-        totimeforquery=timesplit[1]
-        fromtimeforquery=timesplit[0]
+        if TimeForLecture is not None:
+            timesplit=TimeForLecture.split(" to ")
+            totimeforquery=timesplit[1]
+            fromtimeforquery=timesplit[0]
 
-        run_query("SET FOREIGN_KEY_CHECKS=0")
-        run_query(f'''delete t from timetable_data t
-            inner join teacher_data e on t.tt_lecturename = e.teacherid 
-            where e.TeacherName = \"{TimeTableDeleteSelectTeacherName}\" and t.tt_standard like \"{TimeTableDeleteStandard}\" 
-            and t.tt_dayofweek like "{TimeTableWeekDaySelect}"
-            and e.teacherlecture like "{SelectTTlecturename}"
-            and t.tt_totime like "{totimeforquery}"
-            and t.tt_fromtime like "{fromtimeforquery}"
-                ''')
-        run_query("SET FOREIGN_KEY_CHECKS=1")
-
-
-        UserMessage("success",f"Succesfully deleted {SelectTTlecturename} from Time table",3)
+            run_query("SET FOREIGN_KEY_CHECKS=0")
+            run_query(f'''delete t from timetable_data t
+                inner join teacher_data e on t.tt_lecturename = e.teacherid 
+                where e.TeacherName = \"{TimeTableDeleteSelectTeacherName}\" and t.tt_standard like \"{TimeTableDeleteStandard}\" 
+                and t.tt_dayofweek like "{TimeTableWeekDaySelect}"
+                and e.teacherlecture like "{SelectTTlecturename}"
+                and t.tt_totime like "{totimeforquery}"
+                and t.tt_fromtime like "{fromtimeforquery}"
+                    ''')
+            run_query("SET FOREIGN_KEY_CHECKS=1")
+            UserMessage("success",f"Succesfully deleted {SelectTTlecturename} from Time table",3)
+        else:
+            UserMessage("error","Select a lecture to be deleted",3)
 # page_names_to_funcs = {
 #     "Add Timetable Data": AddTT,
 #     "View Timetable Data": ViewTT,

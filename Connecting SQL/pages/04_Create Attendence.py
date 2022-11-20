@@ -151,7 +151,6 @@ with st.form(key="keytimings",clear_on_submit=False):
     attendence_file = st.file_uploader(label = "Upload file", type=["jpg","png","jfif"],accept_multiple_files=True)
     submit_button=st.form_submit_button("Attendence")
 
-
 if submit_button:
     imageslist=[]
     if attendence_file is not None:
@@ -159,7 +158,6 @@ if submit_button:
         for imagesInFolder in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock_main+"/*.jpg"):
             image1=Image.open(imagesInFolder)
             imageslist.append(image1)
-            
     else:
         UserMessage("error","Add a photo",3)
 
@@ -182,19 +180,19 @@ with st.form(key="Verifypicture"):
 
 
 
-
-
-if submitverifypicture and attendence_file is None:
+if submit_button and not attendence_file:
     UserMessage("error","Fill all the fields",3)
+    st.stop()
+
+if submitverifypicture and not attendence_file:
+    UserMessage("error","Fill all the fields",3)
+    st.stop()
 
 if notverify:
     UserMessage("error","Photo not verified",3)
+    st.stop()
 
 
-
-
-
- 
 
 if submitverifypicture and attendence_file is not None:
     faces()
@@ -251,7 +249,6 @@ if submitverifypicture and attendence_file is not None:
                 run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
 
     UserMessage("success",f"Attendence Successfully created for {studentstandard} for date {date_in}",5)
-
 
 
 

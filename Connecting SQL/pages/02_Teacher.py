@@ -83,9 +83,8 @@ def DeleteTeacher():
             
             UserMessage(messagetype="success",UserMessage=f"Deleted {TeacherNameSeLect} from {input_standard}",timeForMessage=3)
             st.experimental_rerun()
-            
         else:
-            UserMessage(messagetype="error",UserMessage="Fill all the fields",timeForMessage=3)
+            UserMessage(messagetype="error",UserMessage="Select a Teacher that needs to be deleted",timeForMessage=3)
             
             
 

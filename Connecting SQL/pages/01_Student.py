@@ -104,6 +104,9 @@ def DeleteStudent():
         SubmitGettingStudentName=st.form_submit_button("Submit")
     
     if SubmitGettingStudentName:
+        if StudentNameSeLect is None:
+            UserMessage("error","Select the Student Name that needs to be deleted",3)
+            st.stop()
         try:
             photoURL=run_query(f"select photourl from student_data where studentname like \"{StudentNameSeLect}\" and studentstandard like \"{input_standard}\" ")
             for url in photoURL:
