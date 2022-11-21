@@ -1,0 +1,4 @@
+StudentRollNo,studentname,teachername,teacherlecture,tt_fromtime,tt_totime,ispresent
+3,Jasraj Singh,Pulak Shindolkar,NOOB,09:45:00,10:00:00,present
+2,Lionel Messi,Pulak Shindolkar,NOOB,09:45:00,10:00:00,absent
+1,Dilip Choudhary,Pulak Shindolkar,NOOB,09:45:00,10:00:00,present

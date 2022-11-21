@@ -1,0 +1,4 @@
+StudentRollNo,studentname,teachername,teacherlecture,tt_fromtime,tt_totime,ispresent
+3,Jasraj Singh,Harsh Katwala,TIMEPASS,08:45:00,09:00:00,present
+2,Lionel Messi,Harsh Katwala,TIMEPASS,08:45:00,09:00:00,absent
+1,Dilip Choudhary,Harsh Katwala,TIMEPASS,08:45:00,09:00:00,present
