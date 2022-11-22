@@ -49,7 +49,7 @@ if set_standard_button:
         TimeInDataName=datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         DataToCSV=pd.DataFrame(sql_query)
         Dataname=str(set_date)+" "+str(std_of_student)+" "+str(TimeInDataName)
-        CSVpath=fr"D:\3rd Year Project\3rd-year-project\Connecting SQL\Attendance Data Downloaded\{Dataname}.csv"
+        CSVpath=fr"D:\3rd Year Project\3rd-year-project\PBAS\Attendance Data Downloaded\{Dataname}.csv"
         DataToCSV.to_csv(CSVpath,index=False, header=True)
         time.sleep(3)
     UserMessage("success","File Saved",3)

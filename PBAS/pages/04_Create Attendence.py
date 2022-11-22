@@ -36,13 +36,13 @@ def faces():
     global new_path
     newdir=datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     newdir_lock=newdir
-    os.mkdir("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/" + newdir)
+    os.mkdir("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/" + newdir)
 
     detector = dlib.get_frontal_face_detector()
-    os.mkdir("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/ImagesForComparison")
+    os.mkdir("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir_lock+"/ImagesForComparison")
 
-    new_path ="D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/ImagesForComparison/Image_"
-    # os.mkdir("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir+"/ImagesForComparison")
+    new_path ="D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir_lock+"/ImagesForComparison/Image_"
+    # os.mkdir("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir+"/ImagesForComparison")
     facesCounter=0
     for imagesVerifiedCounter , verifiedImages in enumerate(attendence_file):
         file_bytes = np.asarray(bytearray(verifiedImages.read()), dtype=np.uint8)
@@ -61,7 +61,7 @@ def faces():
             save(gray,new_path+str(facesCounter),(x1,y1,x2,y2))
             facesCounter+=1
         frame = cv2.resize(frame,(800,800))
-        cv2.imwrite("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/img_"+str(imagesVerifiedCounter)+".jpg",frame)
+        cv2.imwrite("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir_lock+"/img_"+str(imagesVerifiedCounter)+".jpg",frame)
     
 
 def verify_faces():
@@ -71,9 +71,9 @@ def verify_faces():
     NumberOfFaces=0
     newdir=datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     newdir_lock_main=newdir
-    os.mkdir("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/" + newdir)
+    os.mkdir("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/" + newdir)
     detector = dlib.get_frontal_face_detector()
-    new_path_main ="D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock_main+"/Image_"
+    new_path_main ="D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir_lock_main+"/Image_"
     for No_of_files,Uploaded_files in enumerate(attendence_file):
         file_bytes = np.asarray(bytearray(Uploaded_files.read()), dtype=np.uint8)
         opencv_image = cv2.imdecode(file_bytes, 1)  
@@ -90,7 +90,7 @@ def verify_faces():
             NumberOfFaces=NumberOfFaces+1
         No_of_files+=1
         frame = cv2.resize(frame,(800,800))
-        cv2.imwrite("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock_main+"/"+str(No_of_files)+".jpg",frame)
+        cv2.imwrite("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir_lock_main+"/"+str(No_of_files)+".jpg",frame)
         
 
 
@@ -155,7 +155,7 @@ if submit_button:
     imageslist=[]
     if attendence_file is not None:
         verify_faces()
-        for imagesInFolder in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock_main+"/*.jpg"):
+        for imagesInFolder in glob.glob("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir_lock_main+"/*.jpg"):
             image1=Image.open(imagesInFolder)
             imageslist.append(image1)
     else:
@@ -231,7 +231,7 @@ if submitverifypicture and attendence_file is not None:
                     run_query(f"insert into attendence_data(att_studentid,att_teacherid,att_timetableid,ispresent,dateoflecture) VALUES ( {studentid[0][0]} , {tname[0][0]}, {lectureid[0][0]} , \"absent\", \"{date_in}\" )")
             except:
                 pass                                                                                           
-            for img in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/ImagesForComparison/*.jpg"):
+            for img in glob.glob("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir_lock+"/ImagesForComparison/*.jpg"):
                 image_link=data[0]
                 ImageOfAttendece=cv2.imread(img)
                 ImageOfDatabase=cv2.imread(image_link)
@@ -300,7 +300,7 @@ if submitverifypicture and attendence_file is not None:
 #         except:
 #             pass
         
-#         for img in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/*.jpg"):
+#         for img in glob.glob("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir_lock+"/*.jpg"):
 #             image_link=data[0]
 #             ImageOfAttendece=cv2.imread(img)
 #             ImageOfDatabase=cv2.imread(image_link)
@@ -386,10 +386,10 @@ if submitverifypicture and attendence_file is not None:
 #     global new_path
 #     newdir=datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 #     newdir_lock=newdir
-#     os.mkdir("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/" + newdir)
+#     os.mkdir("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/" + newdir)
     
 #     detector = dlib.get_frontal_face_detector()
-#     new_path ="D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/Image_"
+#     new_path ="D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir_lock+"/Image_"
 #     file_bytes = np.asarray(bytearray(attendence_file.read()), dtype=np.uint8)
 #     opencv_image = cv2.imdecode(file_bytes, 1)  
 #     frame =opencv_image
@@ -445,7 +445,7 @@ if submitverifypicture and attendence_file is not None:
 #         photo_data=run_query("select photourl from student_ca where P{")
 #         for data in photo_data:
 #             image_link=data[0]
-#             for img in glob.glob("D:/3rd Year Project/3rd-year-project/Connecting SQL/current attendence imaage/"+newdir_lock+"/*.jpg"):
+#             for img in glob.glob("D:/3rd Year Project/3rd-year-project/PBAS/current attendence imaage/"+newdir_lock+"/*.jpg"):
 #                 ImageOfAttendece=cv2.imread(img)
 #                 ImageOfDatabase=cv2.imread(image_link)
 #                 resultmain=DeepFace.verify(ImageOfAttendece,ImageOfDatabase,model_name="Facenet", enforce_detection=False,detector_backend="mtcnn")

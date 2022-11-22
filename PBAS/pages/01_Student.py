@@ -40,7 +40,7 @@ def AddStudent():
             FullNameOfStudent=FullNameOfStudent.rstrip()
             
             
-            get_image_name=run_query(f"select * from student_data where photoURL like \"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\"")
+            get_image_name=run_query(f"select * from student_data where photoURL like \"D:/3rd Year Project/3rd-year-project/PBAS/ALL_IMAGES/{image_File.name}\"")
             get_sname=run_query(f"select * from student_data where StudentName like \"{FullNameOfStudent}\" and studentstandard=\"{input_standard}\"")
             get_roll_no=run_query(f"select * from student_data where studentRollNo like {input_rno} and studentstandard=\"{input_standard}\"")
             
@@ -62,9 +62,9 @@ def AddStudent():
                         UserMessage(messagetype="error",UserMessage="Multiple faces detected",timeForMessage=3)
                     else:
 
-                        with open(os.path.join("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\ALL_IMAGES",image_File.name),"wb") as f:
+                        with open(os.path.join("D:\\3rd Year Project\\3rd-year-project\\PBAS\\ALL_IMAGES",image_File.name),"wb") as f:
                             f.write(image_File.getbuffer())
-                        run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{FullNameOfStudent}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/{image_File.name}\")")
+                        run_query(f"INSERT into student_data(studentrollno,StudentName,Studentstandard,photoURL) VALUES({input_rno},\"{FullNameOfStudent}\",\"{input_standard}\",\"D:/3rd Year Project/3rd-year-project/PBAS/ALL_IMAGES/{image_File.name}\")")
                     
                         UserMessage(messagetype="success", UserMessage=f"Student {FullNameOfStudent} added to {input_standard}",timeForMessage=3)
                     
