@@ -1,5 +1,4 @@
 
-
 from ast import Return
 from cgi import test
 from copy import deepcopy
@@ -34,6 +33,9 @@ import face_recognition
 import sys
 from streamlit_option_menu import option_menu
 import webbrowser
+import streamlit_authenticator as stauth
+import pickle
+from pathlib import Path
 
 #viewing other pages in homepage:
       # sys.path.append("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\pages")
@@ -52,15 +54,29 @@ import webbrowser
 
       # if selected_menu=="Home":
       #   st.write("Welcome to homepage")
-    
+
+
+
+
+# name_of_peeps=["jasraj"]
+# usernames=["123"]
+
+# file_path=Path(__file__).parent / "hashed_pw.pkl"
+# with file_path.open("rb") as file:
+#   hashed_passwords=pickle.load(file)
+
+# authenticator = stauth.Authenticate(name_of_peeps,usernames,hashed_passwords,"adminlogin","abcdef")
+
+# name , authentication_status , username = authenticator.login("Login","main")
+
+# if authentication_status == False:
+#   st.error("password incorrect")
+
+# if authentication_status:
 weeklist=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 st.sidebar.markdown("Main page")
 
 # st.title("hello")
-
-
-
-
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -81,9 +97,7 @@ def run_query(query):
         return data
 
 
-
 def UserMessage(messagetype:str,UserMessage : str,timeForMessage:int):
-
     if messagetype == "error" or messagetype =="Error":
       message=st.error(UserMessage)
     elif messagetype == "success" or messagetype=="SUCCESS":
@@ -94,11 +108,6 @@ def UserMessage(messagetype:str,UserMessage : str,timeForMessage:int):
     message.empty()
 
 
-
-
-
-
-
 hide_streamlit_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -106,6 +115,16 @@ hide_streamlit_style = """
             </style>
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+
+
+
+
+
+
+
+
+
+
 
 
 # query=run_query("select studentid from student_data where photourl =  \"D:/3rd Year Project/3rd-year-project/Connecting SQL/ALL_IMAGES/tf_1_2.jpg\" ")

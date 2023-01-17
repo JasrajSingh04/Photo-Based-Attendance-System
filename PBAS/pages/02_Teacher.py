@@ -5,7 +5,10 @@ from tkinter.messagebox import NO
 from  Homepage import *
 
 
-
+std=run_query("select standard_name from standard_data")
+stdlist=[]
+for std_name in std:
+    stdlist.append(std_name[0])
 
 
 def AddTeacher():
@@ -14,7 +17,7 @@ def AddTeacher():
         input_teachername=st.text_input("Enter First Name")
         input_teachername_2=st.text_input("Enter Last Name")
         input_teacherclass=st.text_input("Enter Lecture Name")
-        teacherstandard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
+        teacherstandard=st.selectbox("Enter Standard",stdlist)
         submit_teacher=st.form_submit_button("Add")
 
     if submit_teacher:
@@ -43,7 +46,7 @@ def AddTeacher():
 def ViewTeacher():
     # st.title("Show Teacher Data")
     with st.form(key="viewTeacherData",clear_on_submit=True):
-        teacherstandard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
+        teacherstandard=st.selectbox("Enter Standard",stdlist)
         submit_viewteacherdata=st.form_submit_button("View")  
 
     if submit_viewteacherdata:
@@ -57,7 +60,7 @@ def ViewTeacher():
 def DeleteTeacher():
     # st.markdown("# Delete Teacher")
     with st.form(key="GettingTeacherStandard"):
-        input_standard=st.selectbox("Enter Standard",["Select a Standard","FYIT","SYIT","TYIT"])
+        input_standard=st.selectbox("Enter Standard",stdlist)
         SubmitViewTeacherData=st.form_submit_button("Submit")
     
     with st.form(key="GettingTeacherName"):
