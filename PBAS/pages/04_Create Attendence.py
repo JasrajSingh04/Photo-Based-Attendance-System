@@ -107,7 +107,11 @@ image1=None
 
 
 with st.form(key="getstandard",clear_on_submit=False):
-    studentstandard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
+    std=run_query("select standard_name from standard_data")
+    stdlist=[]
+    for std_name in std:
+        stdlist.append(std_name[0])
+    studentstandard=st.selectbox("Enter Standard",stdlist)
     date_in=st.date_input("Select Attendence Date",datetime.date.today())
     submit_standard=st.form_submit_button("Enter standard")
     

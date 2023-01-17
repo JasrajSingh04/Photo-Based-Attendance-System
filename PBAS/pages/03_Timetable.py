@@ -10,17 +10,13 @@ from requests import delete
 from  Homepage import *
 
 
-
-
-
-
-
-
-
-
 def AddTT():
     with st.form(key="standard_selection"):
-        standard_sel=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
+        std=run_query("select standard_name from standard_data")
+        stdlist=[]
+        for std_name in std:
+            stdlist.append(std_name[0])
+        standard_sel=st.selectbox("Enter Standard",stdlist)
         submit_standard_selection=st.form_submit_button("Submit Standard")
 
 
@@ -62,13 +58,14 @@ def AddTT():
                 ttname_tokey=run_query(f"select teacherid from teacher_data where teacherlecture = \"{input_ttname}\" and teachername=\"{input_TeacherName}\"  ")
                 for key in ttname_tokey:
                     mainkey=key[0]
+                print(mainkey)
                 time_query=run_query(f"select tt_fromtime , tt_totime from timetable_data where tt_standard=\"{standard_sel}\" and tt_dayofweek=\"{SelectWeekDay}\"")
 
-                check_query=run_query(f"select * from timetable_data where tt_fromtime=\"{start_time}\" or tt_totime=\"{end_time}\" and tt_standard=\"{standard_sel}\" and tt_lecturename like {mainkey} and tt_dayofweek like \"{SelectWeekDay}\"")
+                check_query=run_query(f"select * from timetable_data where tt_fromtime=\"{start_time}\" and tt_totime=\"{end_time}\" and tt_standard=\"{standard_sel}\" and tt_lecturename like {mainkey} and tt_dayofweek like \"{SelectWeekDay}\"")
                 
                 if check_query:
-                    UserMessage("error",f"There is already a lecture named {standard_sel} with timings from {start_time} to {end_time} of standard {standard_sel} with teacher {input_TeacherName}",3)
-                    return 
+                    UserMessage("error",f"There is already a lecture named {input_ttname} with timings from {start_time} to {end_time} of standard {standard_sel} with teacher {input_TeacherName}",3)
+                    st.stop()
                 
                 if time_query:
                     for time in time_query:
@@ -120,7 +117,11 @@ def AddTT():
      
 def ViewTT():
     with st.form(key="viewTimetableData"):
-        input_standard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
+        std=run_query("select standard_name from standard_data")
+        stdlist=[]
+        for std_name in std:
+            stdlist.append(std_name[0])
+        input_standard=st.selectbox("Enter Standard",stdlist)
         SelectWeekDay=st.selectbox("Enter Day of the week",weeklist)
         SubmitViewTimetableData=st.form_submit_button("View")
     
@@ -141,7 +142,11 @@ def ViewTT():
 def DeleteTT():
     st.markdown("Delete Lectures")
     with st.form(key="StandardTimeTable"):
-        TimeTableDeleteStandard=st.selectbox("Enter Standard",["FYIT","SYIT","TYIT"])
+        std=run_query("select standard_name from standard_data")
+        stdlist=[]
+        for std_name in std:
+            stdlist.append(std_name[0])
+        TimeTableDeleteStandard=st.selectbox("Enter Standard",stdlist)
         TimeTableWeekDaySelect=st.selectbox("Enter day of the week",weeklist)
         SubmitTimeTableStandard=st.form_submit_button("Submit")
 
