@@ -8,8 +8,12 @@ from matplotlib.cbook import contiguous_regions
 from regex import F
 from  Homepage import *
 
-def yes():
-    print("Yes")
+
+
+
+
+
+
 
 
 

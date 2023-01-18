@@ -4,8 +4,8 @@ from queue import Full
 from tkinter.messagebox import NO
 from  Homepage import *
 
-def yes():
-    print("Yes")
+
+
 
 std=run_query("select standard_name from standard_data")
 stdlist=[]

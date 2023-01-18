@@ -10,8 +10,9 @@ from  Homepage import *
 import re
 
 
-def yes():
-    print("Yes")
+
+
+
 
 def load_image(image_File):
     img=Image.open(image_File)
