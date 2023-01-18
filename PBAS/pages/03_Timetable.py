@@ -9,6 +9,9 @@ from regex import W
 from requests import delete
 from  Homepage import *
 
+def yes():
+    print("Yes")
+
 
 def AddTT():
     with st.form(key="standard_selection"):

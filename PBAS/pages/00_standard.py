@@ -2,6 +2,8 @@ import shutil
 from Homepage import *
 
 
+def yes():
+    print("Yes")
 
 def add_standard():
     with st.form(key="Standard_Data",clear_on_submit=True):

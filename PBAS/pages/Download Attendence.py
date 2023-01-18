@@ -3,6 +3,9 @@ from  Homepage import *
 
 clean_db = pd.DataFrame
 
+def yes():
+    print("Yes")
+
 with st.form(key="set_date"):
     set_date=st.date_input("Select Attendence Date",datetime.date.today())
     set_date_button=st.form_submit_button("Enter Date")
