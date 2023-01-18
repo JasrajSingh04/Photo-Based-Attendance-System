@@ -73,32 +73,84 @@ from pathlib import Path
 # if authentication_status:
 
 
-hashed_passwords = stauth.Hasher(['123', '456']).generate()
-print(hashed_passwords)
 
-with open('D:\\3rd Year Project\\3rd-year-project\\PBAS\\secrets.yaml') as file:
-    config = yaml.load(file, Loader=yaml.SafeLoader)
+def login():
 
-authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days'],
-    config['preauthorized']
-)
+  with open('D:\\3rd Year Project\\3rd-year-project\\PBAS\\secrets.yaml') as file:
+      config = yaml.load(file, Loader=yaml.SafeLoader)
 
-name, authentication_status, username = authenticator.login('Login', 'main')
+  authenticator = stauth.Authenticate(
+      config['credentials'],
+      config['cookie']['name'],
+      config['cookie']['key'],
+      config['cookie']['expiry_days'],
+      config['preauthorized']
+  )
+  name, authentication_status, username = authenticator.login('Login', 'main')
+  if st.session_state["authentication_status"]:
+      print("logged in successfully")
+      authenticator.logout('Logout', 'main')
+      st.write(f'Welcome *{st.session_state["name"]}*')
+      st.title('Some content')
+  elif st.session_state["authentication_status"] == False:
+      st.error('Username/password is incorrect')
+      
+  elif st.session_state["authentication_status"] == None:
+      st.warning('Please enter your username and password')
 
-if st.session_state["authentication_status"]:
-    print("logged in successfully")
-    authenticator.logout('Logout', 'main')
-    st.write(f'Welcome *{st.session_state["name"]}*')
-    st.title('Some content')
-elif st.session_state["authentication_status"] == False:
-    st.error('Username/password is incorrect')
-    
-elif st.session_state["authentication_status"] == None:
-    st.warning('Please enter your username and password')
+
+def signup():
+  with st.form(key="Signup",clear_on_submit=True):
+    input_name=st.text_input("Enter Name")
+    input_username=st.text_input("Enter Input")
+    input_email=st.text_input("Enter Email")
+    input_password=st.text_input("Enter Password",type="password")
+    submit_sign=st.form_submit_button("Submit")
+
+    hashed_passwords = stauth.Hasher([input_password]).generate()
+  
+    if submit_sign:
+      with open('D:\\3rd Year Project\\3rd-year-project\\PBAS\\secrets.yaml',"r") as file:
+        config = yaml.safe_load(file)    
+
+        if f"{input_username}" in config["credentials"]["usernames"]:
+          UserMessage("error","Username already Exits",3)
+          st.stop()
+          
+        config["credentials"]["usernames"][f"{input_username}"]={"email":f"{input_email}",
+        "name":f"{input_name}",
+        "password":f"{hashed_passwords[0]}"
+        }
+      
+
+        
+
+      with open('D:\\3rd Year Project\\3rd-year-project\\PBAS\\secrets.yaml',"w") as file_write:
+        yaml.dump(config,file_write)
+
+      UserMessage("success","Succesfully registered",3)
+
+
+
+      # data={"credentials":
+      #   {"usernames":
+      #     {
+      #       f"{input_username}":
+      #     {
+      #       {
+      #         "email":f"{input_email}",
+      #         "name":f"{input_name}",
+      #         "password":f"{input_password}"
+      #       }
+      #     }
+      #     }
+      # }
+      # }
+
+      
+  
+ 
+
 
 
 weeklist=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
@@ -134,6 +186,19 @@ def UserMessage(messagetype:str,UserMessage : str,timeForMessage:int):
       message=st.warning(UserMessage)
     time.sleep(timeForMessage)
     message.empty()
+
+
+
+# signin_btn=st.button("Login")
+# signup_btn=st.button("new? signup")
+
+page_names_to_funcs = {
+    "Main Page": login,
+    "Page 2": signup
+}
+
+selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
+page_names_to_funcs[selected_page]()
 
 
 hide_streamlit_style = """
