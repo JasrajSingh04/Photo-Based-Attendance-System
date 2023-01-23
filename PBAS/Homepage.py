@@ -14,6 +14,7 @@ import glob
 import io
 import pyodbc
 import re
+import handout
 import hydralit_components as hc
 from deepface import DeepFace
 from turtle import clear
@@ -160,10 +161,10 @@ weeklist=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"
 
 # handout: begin-exclude
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="jasrajsql", 
-  database="testdb"
+  host="localhost", # handout: exclude
+  user="root", # handout: exclude
+  password="jasrajsql", # handout: exclude
+  database="testdb" # handout: exclude
 )
 # handout: end-exclude
 
