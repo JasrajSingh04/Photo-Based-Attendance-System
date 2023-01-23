@@ -28,7 +28,6 @@ import pandas as pd
 import pickle as pkle
 from PIL import Image,ImageEnhance
 import os
-
 from PIL import Image , ImageOps , ImageDraw , ImageFont
 from typer import Exit
 import face_recognition
@@ -39,11 +38,6 @@ import yaml
 import streamlit_authenticator as stauth
 import pickle
 from pathlib import Path
-import importlib.util as ilu
-script_dir = os.path.dirname( __file__ )
-mymodule_dir = os.path.join( script_dir, 'D', 'SQL')
-sys.path.append( mymodule_dir )
-
 
 #viewing other pages in homepage:
       # sys.path.append("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\pages")
@@ -163,14 +157,19 @@ def signup():
 weeklist=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 # st.sidebar.markdown("Main page")
 
-# st.title("hello")'
+# st.title("hello")
+
 
 mydb = mysql.connector.connect(
-    host="localhost", 
-    user="root", 
-    password="jasrajsql", 
-    database="testdb" 
-  )
+  host="localhost", 
+  user="root", 
+  password="jasrajsql", 
+  database="testdb" 
+)
+
+
+myc=mydb.cursor()
+
 
 
 def run_query(query):
@@ -179,7 +178,6 @@ def run_query(query):
         data= cur.fetchall()
         mydb.commit()
         return data
-
 
 
 def UserMessage(messagetype:str,UserMessage : str,timeForMessage:int):
