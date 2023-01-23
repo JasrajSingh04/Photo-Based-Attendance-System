@@ -161,10 +161,10 @@ weeklist=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"
 
 # handout: begin-exclude
 mydb = mysql.connector.connect(
-  host="localhost", # handout: exclude
-  user="root", # handout: exclude
-  password="jasrajsql", # handout: exclude
-  database="testdb" # handout: exclude
+  host="localhost", 
+  user="root", 
+  password="jasrajsql", 
+  database="testdb" 
 )
 # handout: end-exclude
 
