@@ -181,6 +181,9 @@ def run_query(query):
         return data
 
 
+def test():
+  return 0
+
 def UserMessage(messagetype:str,UserMessage : str,timeForMessage:int):
     if messagetype == "error" or messagetype =="Error":
       message=st.error(UserMessage)
