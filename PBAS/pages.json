@@ -40,5 +40,12 @@
         "page_name": "Download_Attendence",
         "icon": "",
         "script_path": "D:\\3rd Year Project\\3rd-year-project\\PBAS\\pages\\Download Attendence.py"
+    },
+    "2e1c3d25821b2b20dde288e7af46982c1": {
+        "page_script_hash": "2e1c3d25821b2b20dde288e7af46982c",
+        "page_name": "Download_Attendence",
+        "icon": "",
+        "script_path": "D:\\3rd Year Project\\3rd-year-project\\PBAS\\pages\\Download Attendence.py"
     }
+    
 }
