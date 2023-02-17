@@ -3,16 +3,26 @@ import functools
 from queue import Full
 from tkinter import Button, Menu
 from fastapi import Query
-
+import requests
 from numpy import full
 from pydantic import DurationError
 from  Homepage import *
 import re
+from streamlit_extras.switch_page_button import switch_page
 
+# z=st.button("logotu")
+# if z:
+#     switch_page("homepage")
 
+def get_cookie_manager_student():
+    return stx.CookieManager(key="student_")
 
-
-
+cookie_manager_stx = get_cookie_manager_student()
+cookie_value = cookie_manager_stx.get(cookie="some_cookie_name")
+print(cookie_value)
+if cookie_value is None:
+    st.write("Please Login")
+    st.stop()
 
 def load_image(image_File):
     img=Image.open(image_File)
@@ -20,11 +30,12 @@ def load_image(image_File):
 
 
 
+
 # clean_db=pd.DataFrame(rows,columns=["Roll no","Name","Prac"])
 
 def AddStudent():
     # st.title("Add Data")
-
+    
     with st.form(key="StudentData",clear_on_submit=True):
         std=run_query("select standard_name from standard_data")
         stdlist=[]
@@ -130,18 +141,16 @@ def DeleteStudent():
         run_query(f"delete from student_data where studentname=\"{StudentNameSeLect}\" and studentstandard=\"{input_standard}\"")
         run_query("SET FOREIGN_KEY_CHECKS=1")
         UserMessage(messagetype="success",UserMessage=f"{StudentNameSeLect} was removed from {input_standard}",timeForMessage=3)    
-       
-        
+
 
 
 SelectedMenuStudents =option_menu(
-  menu_title="Student",
-  menu_icon="list-task",
-  options=["Add","View","Delete"],
-  icons=["book","book","book"],
-  orientation="horizontal"
+menu_title="Student",
+menu_icon="list-task",
+options=["Add","View","Delete"],
+icons=["book","book","book"],
+orientation="horizontal"
 )
-
 
 if SelectedMenuStudents=="Add":
     AddStudent()

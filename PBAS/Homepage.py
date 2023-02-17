@@ -5,6 +5,8 @@ from copy import deepcopy
 import datetime
 import imp
 import importlib
+from streamlit.web.server import Server
+import json
 import time
 from re import I
 from runpy import run_module
@@ -37,8 +39,11 @@ import webbrowser
 import yaml
 import streamlit_authenticator as stauth
 import pickle
+import requests
 from pathlib import Path
-
+import extra_streamlit_components as stx
+from streamlit.source_util import _on_pages_changed, get_pages
+import extra_streamlit_components as stx
 #viewing other pages in homepage:
       # sys.path.append("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\pages")
       # func=__import__("01_Student")
@@ -73,34 +78,66 @@ from pathlib import Path
 
 # if authentication_status:
 
+def get_cookie_manager_homepage():
+    return stx.CookieManager(key="homepage_")
+
+cookie_manager_stx = get_cookie_manager_homepage()
+cookie_value = cookie_manager_stx.get(cookie="some_cookie_name")
 
 
 def login():
+  username="yes_1"
+  name_="yes"
+  password_="$2b$12$jXLLLINDm2safqPdfy3Oc..HCum6rSC6Dbrxsw1q7GDC46BTbrdkG"
+  usernames=[username]
+  names=[name_]
+  passwords=[password_]
+  hashed=stauth.Hasher(passwords=passwords).generate()
+
+  credentials = {
+        "usernames":{
+            usernames[0]:{
+                "name":names[0],
+                "password":passwords[0]
+                },      
+            }
+        }
+
 
   with open('D:\\3rd Year Project\\3rd-year-project\\PBAS\\secrets.yaml') as file:
       config = yaml.load(file, Loader=yaml.SafeLoader)
 
+
   authenticator = stauth.Authenticate(
-      config['credentials'],
-      config['cookie']['name'],
-      config['cookie']['key'],
-      config['cookie']['expiry_days'],
-      config['preauthorized']
+      credentials,"some_cookie_name","somesignaturekey",cookie_expiry_days=30
   )
   name, authentication_status, username = authenticator.login('Login', 'main')
-  if st.session_state["authentication_status"]:
+
+
+  if authentication_status:  
+      # hide_page(DEFAULT_PAGE.replace(".py", ""))
+      # delete_page("homepage","homepage")
       print("logged in successfully")
       authenticator.logout('Logout', 'main')
       st.write(f'Welcome *{st.session_state["name"]}*')
       st.title('Some content')
-  elif st.session_state["authentication_status"] == False:
+    
+  elif authentication_status == False:
       st.error('Username/password is incorrect')
-      
-  elif st.session_state["authentication_status"] == None:
+  elif authentication_status== None:
       st.warning('Please enter your username and password')
 
+# st.sidebar.write("hello")
 
 def signup():
+  def get_cookie_manager():
+      return stx.CookieManager()
+
+  cookie_manager_stx = get_cookie_manager()
+  cookie_value = cookie_manager_stx.get(cookie="some_cookie_name")
+  if cookie_value is not None:
+     st.write("Already Signed In")
+     st.stop()
   with st.form(key="Signup",clear_on_submit=True):
     input_name=st.text_input("Enter Name")
     input_username=st.text_input("Enter Input")
@@ -124,33 +161,11 @@ def signup():
         }
       
 
-        
-
+    
       with open('D:\\3rd Year Project\\3rd-year-project\\PBAS\\secrets.yaml',"w") as file_write:
         yaml.dump(config,file_write)
 
       UserMessage("success","Succesfully registered",3)
-
-
-
-      # data={"credentials":
-      #   {"usernames":
-      #     {
-      #       f"{input_username}":
-      #     {
-      #       {
-      #         "email":f"{input_email}",
-      #         "name":f"{input_name}",
-      #         "password":f"{input_password}"
-      #       }
-      #     }
-      #     }
-      # }
-      # }
-
-      
-  
- 
 
 
 
@@ -190,19 +205,25 @@ def UserMessage(messagetype:str,UserMessage : str,timeForMessage:int):
     time.sleep(timeForMessage)
     message.empty()
 
-
-
 # signin_btn=st.button("Login")
 # signup_btn=st.button("new? signup")
 
-page_names_to_funcs = {
-    "Main Page": login,
-    "Page 2": signup
-}
 
-selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
-page_names_to_funcs[selected_page]()
+if cookie_value is None:
+  SelectedPageMenu =option_menu(
+  menu_title="Student",
+  menu_icon="list-task",
+  options=["Login","Sign In"],
+  icons=["book","book"],
+  orientation="horizontal"
+  )
 
+  if SelectedPageMenu=="Login":
+      login()
+  elif SelectedPageMenu=="Sign In":
+      signup()
+else:
+   login()
 
 hide_streamlit_style = """
             <style>
