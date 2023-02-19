@@ -1,6 +1,7 @@
 
 from ast import Return
 from cgi import test
+import collections
 from copy import deepcopy
 import datetime
 import imp
@@ -44,6 +45,7 @@ from pathlib import Path
 import extra_streamlit_components as stx
 from streamlit.source_util import _on_pages_changed, get_pages
 import extra_streamlit_components as stx
+from collections import defaultdict
 #viewing other pages in homepage:
       # sys.path.append("D:\\3rd Year Project\\3rd-year-project\\Connecting SQL\\pages")
       # func=__import__("01_Student")
@@ -78,102 +80,6 @@ import extra_streamlit_components as stx
 
 # if authentication_status:
 
-def get_cookie_manager_homepage():
-    return stx.CookieManager(key="homepage_")
-
-cookie_manager_stx = get_cookie_manager_homepage()
-cookie_value = cookie_manager_stx.get(cookie="some_cookie_name")
-
-
-def login():
-  username="yes_1"
-  name_="yes"
-  password_="$2b$12$jXLLLINDm2safqPdfy3Oc..HCum6rSC6Dbrxsw1q7GDC46BTbrdkG"
-  usernames=[username]
-  names=[name_]
-  passwords=[password_]
-  hashed=stauth.Hasher(passwords=passwords).generate()
-
-  credentials = {
-        "usernames":{
-            usernames[0]:{
-                "name":names[0],
-                "password":passwords[0]
-                },      
-            }
-        }
-
-
-  with open('D:\\3rd Year Project\\3rd-year-project\\PBAS\\secrets.yaml') as file:
-      config = yaml.load(file, Loader=yaml.SafeLoader)
-
-
-  authenticator = stauth.Authenticate(
-      credentials,"some_cookie_name","somesignaturekey",cookie_expiry_days=30
-  )
-  name, authentication_status, username = authenticator.login('Login', 'main')
-
-
-  if authentication_status:  
-      # hide_page(DEFAULT_PAGE.replace(".py", ""))
-      # delete_page("homepage","homepage")
-      print("logged in successfully")
-      authenticator.logout('Logout', 'main')
-      st.write(f'Welcome *{st.session_state["name"]}*')
-      st.title('Some content')
-    
-  elif authentication_status == False:
-      st.error('Username/password is incorrect')
-  elif authentication_status== None:
-      st.warning('Please enter your username and password')
-
-# st.sidebar.write("hello")
-
-def signup():
-  def get_cookie_manager():
-      return stx.CookieManager()
-
-  cookie_manager_stx = get_cookie_manager()
-  cookie_value = cookie_manager_stx.get(cookie="some_cookie_name")
-  if cookie_value is not None:
-     st.write("Already Signed In")
-     st.stop()
-  with st.form(key="Signup",clear_on_submit=True):
-    input_name=st.text_input("Enter Name")
-    input_username=st.text_input("Enter Input")
-    input_email=st.text_input("Enter Email")
-    input_password=st.text_input("Enter Password",type="password")
-    submit_sign=st.form_submit_button("Submit")
-
-    hashed_passwords = stauth.Hasher([input_password]).generate()
-  
-    if submit_sign:
-      with open('D:\\3rd Year Project\\3rd-year-project\\PBAS\\secrets.yaml',"r") as file:
-        config = yaml.safe_load(file)    
-
-        if f"{input_username}" in config["credentials"]["usernames"]:
-          UserMessage("error","Username already Exits",3)
-          st.stop()
-          
-        config["credentials"]["usernames"][f"{input_username}"]={"email":f"{input_email}",
-        "name":f"{input_name}",
-        "password":f"{hashed_passwords[0]}"
-        }
-      
-
-    
-      with open('D:\\3rd Year Project\\3rd-year-project\\PBAS\\secrets.yaml',"w") as file_write:
-        yaml.dump(config,file_write)
-
-      UserMessage("success","Succesfully registered",3)
-
-
-
-weeklist=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
-# st.sidebar.markdown("Main page")
-
-# st.title("hello")
-
 
 mydb = mysql.connector.connect(
   host="localhost", 
@@ -195,6 +101,198 @@ def run_query(query):
         return data
 
 
+DEFAULT_PAGE ="Homepage.py"
+
+def get_all_pages():
+    default_pages = get_pages(DEFAULT_PAGE)
+
+    pages_path = Path("pages.json")
+
+    if pages_path.exists():
+        saved_default_pages = json.loads(pages_path.read_text())
+    else:
+        saved_default_pages = default_pages.copy()
+        pages_path.write_text(json.dumps(default_pages, indent=4))
+
+    return saved_default_pages
+
+
+def clear_all_but_first_page():
+    current_pages = get_pages(DEFAULT_PAGE)
+
+    if len(current_pages.keys()) == 1:
+        return
+
+    get_all_pages()
+
+    # Remove all but the first page
+    key, val = list(current_pages.items())[0]
+    current_pages.clear()
+    current_pages[key] = val
+
+    _on_pages_changed.send()
+
+
+def show_all_pages():
+    current_pages = get_pages(DEFAULT_PAGE)
+
+    saved_pages = get_all_pages()
+
+    # Replace all the missing pages
+    for key in saved_pages:
+        if key not in current_pages:
+            current_pages[key] = saved_pages[key]
+
+    _on_pages_changed.send()
+
+
+def hide_page(name: str):
+    current_pages = get_pages(DEFAULT_PAGE)
+
+    for key, val in current_pages.items():
+        if val["page_name"] == name:
+            del current_pages[key]
+            _on_pages_changed.send()
+            break
+
+
+clear_all_but_first_page()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def get_cookie_manager_homepage():
+    return stx.CookieManager(key="homepage_")
+
+cookie_manager_stx = get_cookie_manager_homepage()
+cookie_value = cookie_manager_stx.get(cookie="some_cookie_name")
+
+
+def login():
+#   username="yes_1"
+#   name_="yes"
+#   password_="$2b$12$jXLLLINDm2safqPdfy3Oc..HCum6rSC6Dbrxsw1q7GDC46BTbrdkG"
+#   usernames=[username]
+#   names=[name_]
+#   passwords=[password_]
+#   hashed=stauth.Hasher(passwords=passwords).generate()
+#   credentials = {
+#             "usernames":{
+#                 []:{
+#                     "name":[],
+#                     "password":[]
+#                     },      
+#                 }
+#             }
+#   nesteddict=lambda:defaultdict(nesteddict)
+#   credentials=nesteddict()
+#   test_button=st.button("submit")
+#   if test_button:
+#      for nums in range(5,10000):
+#         hashed_num = stauth.Hasher([f"rows{nums}"]).generate()
+#         run_query(f'''INSERT into users(name,username,password) Values("rows{nums}","rows{nums}","{hashed_num[0]}")''')
+  credentials_dict=dict()
+  userQuery=run_query("Select username,name,password from users")
+  for rows in userQuery:
+    credentials_dict[rows[0]]={"name":rows[1],"password":rows[2]}
+  
+
+    #  credentials["credentials"]["usernames"][f"{rows[0]}"]["name"]=rows[1]
+    #  credentials["credentials"]["usernames"][f"{rows[0]}"]["password"]=rows[2]
+    #  credentials.update({
+    #         "usernames":{
+    #             rows[0]:{
+    #                 "name":rows[1],
+    #                 "password":rows[2]
+    #                 },      
+    #             }
+    #         })
+  credentials=dict({"usernames":credentials_dict})
+#   print(credentials)  
+  
+
+ 
+  authenticator = stauth.Authenticate(
+      credentials,"some_cookie_name","somesignaturekey",cookie_expiry_days=30
+  )
+  name, authentication_status, username = authenticator.login('Login', 'main')
+    
+
+  if st.session_state["authentication_status"] and cookie_value is not None: 
+      authenticator.logout('Logout', 'main')
+      st.write(f'Welcome *{st.session_state["name"]}*')
+      st.title('Some content')
+    
+  elif st.session_state["authentication_status"] == False:
+      st.error('Username/password is incorrect')
+  elif st.session_state["authentication_status"] == None:
+      st.warning('Please enter your username and password')
+
+# st.sidebar.write("hello")
+
+def signup():
+  # def get_cookie_manager():
+  #     return stx.CookieManager()
+
+  # cookie_manager_stx = get_cookie_manager()
+  # cookie_value = cookie_manager_stx.get(cookie="some_cookie_name")
+  
+  # if cookie_value is not None:
+  #    st.write("Already Signed In")
+  #    st.stop()
+  with st.form(key="Signup",clear_on_submit=True):
+    input_name=st.text_input("Enter Name")
+    input_username=st.text_input("Enter Username")
+    input_password=st.text_input("Enter Password",type="password")
+    submit_sign=st.form_submit_button("Submit")
+
+    hashed_passwords = stauth.Hasher([input_password]).generate()
+  
+    if submit_sign:
+      try:
+        run_query(f'''INSERT into users(name,username,password) Values("{input_name}","{input_username}","{hashed_passwords[0]}")''')
+        UserMessage("success",f"Succesfully registered {input_username}",3) 
+      except mysql.connector.IntegrityError as err:
+         UserMessage("error","Username Already Exists",3)
+      
+
+
+weeklist=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+# st.sidebar.markdown("Main page")
+
+# st.title("hello")
+
+
+
 def UserMessage(messagetype:str,UserMessage : str,timeForMessage:int):
     if messagetype == "error" or messagetype =="Error":
       message=st.error(UserMessage)
@@ -210,8 +308,9 @@ def UserMessage(messagetype:str,UserMessage : str,timeForMessage:int):
 
 
 if cookie_value is None:
+  clear_all_but_first_page()
   SelectedPageMenu =option_menu(
-  menu_title="Student",
+  menu_title="Account",
   menu_icon="list-task",
   options=["Login","Sign In"],
   icons=["book","book"],
@@ -223,6 +322,8 @@ if cookie_value is None:
   elif SelectedPageMenu=="Sign In":
       signup()
 else:
+   show_all_pages()
+   hide_page(DEFAULT_PAGE.replace(".py", ""))
    login()
 
 hide_streamlit_style = """

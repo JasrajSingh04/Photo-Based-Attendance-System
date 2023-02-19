@@ -19,7 +19,8 @@ def get_cookie_manager_student():
 
 cookie_manager_stx = get_cookie_manager_student()
 cookie_value = cookie_manager_stx.get(cookie="some_cookie_name")
-print(cookie_value)
+
+
 if cookie_value is None:
     st.write("Please Login")
     st.stop()
